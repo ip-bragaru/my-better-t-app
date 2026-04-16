@@ -1,0 +1,74 @@
+{
+  "fontFamily": {
+    "body": {
+      "medium": "Manrope-Medium",
+      "semiBold": "Manrope-SemiBold",
+      "bold": "Manrope-Bold"
+    }
+  },
+  "color": {
+    "canvas": {
+      "default": "#F5F8FD",
+      "elevated": "#FCFAF7"
+    },
+    "surface": {
+      "default": "#FFFFFF",
+      "muted": "#F1EBE5",
+      "accent": "#F2EDFF"
+    },
+    "border": {
+      "default": "#E8ECEF",
+      "strong": "#D8CDC2"
+    },
+    "text": {
+      "primary": "#17131A",
+      "secondary": "#6F6470",
+      "muted": "#9A8F98",
+      "inverse": "#FFFFFF"
+    },
+    "brand": {
+      "primary": "#6115CD",
+      "strong": "#5831E8",
+      "soft": "#EEE7FF"
+    },
+    "feedback": {
+      "success": {
+        "surface": "#DDF7E7",
+        "text": "#1C6B45"
+      },
+      "warning": {
+        "surface": "#FEF3C7",
+        "text": "#92400E"
+      },
+      "danger": {
+        "surface": "#FDE9EF",
+        "text": "#B43B69"
+      }
+    },
+    "overlay": {
+      "soft": "rgba(23, 19, 26, 0.04)"
+    }
+  },
+  "radius": {
+    "sm": 14,
+    "md": 18,
+    "lg": 24,
+    "xl": 28,
+    "full": 999
+  },
+  "size": {
+    "layout": {
+      "screenPadding": 20,
+      "sectionGap": 20
+    },
+    "card": {
+      "radius": 24
+    },
+    "avatar": {
+      "md": 44
+    },
+    "post": {
+      "coverHeight": 220
+    }
+  }
+}

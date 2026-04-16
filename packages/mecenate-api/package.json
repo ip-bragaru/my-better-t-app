@@ -1,0 +1,18 @@
+{
+  "name": "@my-better-t-app/mecenate-api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "generate": "openapi-typescript openapi/mecenate.openapi.json -o src/__generated__/mecenate-api.types.ts"
+  },
+  "devDependencies": {
+    "@my-better-t-app/config": "workspace:*",
+    "@types/node": "^24.10.0",
+    "openapi-typescript": "^7.13.0",
+    "typescript": "catalog:"
+  }
+}
