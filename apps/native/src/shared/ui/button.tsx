@@ -5,16 +5,16 @@ import { DESIGN_TOKENS } from "@shared/config/design-tokens";
 import { cn } from "@shared/lib/cn";
 
 const buttonInner = tv({
-  base: "flex-row items-center justify-center gap-2 rounded-full",
+  base: "flex-row items-center justify-center gap-2 rounded-[14px]",
   variants: {
     variant: {
-      accent: "bg-[var(--color-app-brand-primary)]",
-      neutral: "bg-[var(--color-app-surface-muted)]",
-      ghost: "bg-transparent",
+      accent: "bg-[#6115CD] group-hover:bg-[#4E11A4] group-disabled:bg-[#D5C9FF]",
+      neutral: "bg-[var(--color-app-surface-muted)] group-disabled:opacity-45",
+      ghost: "bg-transparent group-disabled:opacity-45",
     },
     size: {
       sm: "min-h-10 px-[14px] py-[10px]",
-      md: "min-h-[46px] px-[18px] py-[13px]",
+      md: "h-[42px] px-8",
     },
   },
   defaultVariants: { variant: "accent", size: "md" },
@@ -24,13 +24,13 @@ const buttonLabel = tv({
   base: "text-center font-semibold",
   variants: {
     variant: {
-      accent: "text-white",
+      accent: "text-white group-hover:text-[#DFD0F5]",
       neutral: "text-[var(--color-app-text-primary)]",
       ghost: "text-[var(--color-app-brand-primary)]",
     },
     size: {
       sm: "text-[13px]",
-      md: "text-[15px]",
+      md: "text-[15px] leading-[26px]",
     },
   },
   defaultVariants: { variant: "accent", size: "md" },
@@ -66,7 +66,7 @@ export function Button({
       disabled={disabled || isLoading}
       {...props}
       className={cn(
-        "rounded-full active:opacity-90 disabled:opacity-45",
+        "group rounded-[14px] active:opacity-90",
         fullWidth ? "self-stretch" : "self-start",
       )}
     >
@@ -74,7 +74,7 @@ export function Button({
         {isLoading ? (
           <ActivityIndicator
             size="small"
-            color={variant === "accent" ? "#ffffff" : DESIGN_TOKENS.color.brand.primary}
+            color={variant === "accent" ? "#4E11A4" : DESIGN_TOKENS.color.brand.primary}
           />
         ) : (
           <>

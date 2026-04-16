@@ -45,7 +45,7 @@ export function PostStatsRow({
                 size={16}
                 color={
                   isLiked
-                    ? DESIGN_TOKENS.color.brand.strong
+                    ? "#FFEAF1"
                     : DESIGN_TOKENS.color.text.primary
                 }
               />

@@ -10,35 +10,41 @@ type PaidPostCoverProps = {
 
 export function PaidPostCover({ coverUrl, onDonatePress }: PaidPostCoverProps) {
   return (
-    <View className="relative h-[286px] overflow-hidden">
+    <View className="relative aspect-square w-full overflow-hidden">
       <RemoteImage
         uri={coverUrl}
         alt="Locked post cover"
         className="h-full w-full"
+        blurRadius={40}
       />
       <View className="absolute inset-0 bg-[rgba(16,16,22,0.52)]" />
-      <View className="absolute inset-0 items-center justify-center gap-[14px] px-8">
-        <View className="h-9 w-9 items-center justify-center rounded-2xl bg-[var(--color-app-brand-primary)]">
-          <Text className="text-base text-white font-semibold">
-            $
-          </Text>
+      <View className="absolute inset-0 items-center justify-center gap-2 px-3">
+        <View className="p-2.75 bg-[var(--color-app-brand-primary)] rounded-md">
+
+          <View className="size-5 items-center justify-center rounded-full bg-white  ">
+            <Text className="text-sm text-[var(--color-app-brand-primary)] font-semibold">
+              $
+            </Text>
+          </View>
         </View>
 
         <View className="items-center gap-0.5">
-          <Text className="text-center text-base text-white font-medium">
+          <Text className="text-center text-[15px] leading-5 tracking-[0px] text-white font-semibold lining-nums tabular-nums stacked-fractions">
             Контент скрыт пользователем.
           </Text>
-          <Text className="text-center text-base text-white font-medium">
+          <Text className="text-center text-[15px] leading-5 tracking-[0px] text-white font-semibold lining-nums tabular-nums stacked-fractions">
             Доступ откроется после доната
           </Text>
         </View>
-
-        <Button
-          label="Отправить донат"
-          onPress={onDonatePress}
-          variant="accent"
-          size="md"
-        />
+        <View className="justify-center items-center">
+          <Button
+            label="Отправить донат"
+            onPress={onDonatePress}
+            variant="accent"
+            size="md"
+            className="self-stretch"
+          />
+        </View>
       </View>
     </View>
   );

@@ -13,6 +13,7 @@ type RemoteImageProps = {
   alt: string;
   className?: string;
   resizeMode?: ImageResizeMode;
+  blurRadius?: number;
 };
 
 export function RemoteImage({
@@ -20,6 +21,7 @@ export function RemoteImage({
   alt,
   className,
   resizeMode = "cover",
+  blurRadius,
 }: RemoteImageProps) {
   const [hasError, setHasError] = useState(false);
 
@@ -34,12 +36,15 @@ export function RemoteImage({
   }
 
   return (
-    <Image
-      className={className}
-      source={{ uri }}
-      accessibilityLabel={alt}
-      onError={() => setHasError(true)}
-      resizeMode={resizeMode}
-    />
+    <View className={className}>
+      <Image
+        style={{ width: "100%", height: "100%" }}
+        source={{ uri }}
+        accessibilityLabel={alt}
+        onError={() => setHasError(true)}
+        resizeMode={resizeMode}
+        blurRadius={blurRadius}
+      />
+    </View>
   );
 }

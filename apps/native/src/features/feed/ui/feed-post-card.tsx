@@ -28,8 +28,8 @@ function FeedPostCardComponent({ post, onPress }: FeedPostCardProps) {
           </View>
           <PaidPostCover coverUrl={post.coverUrl} />
           <View className="gap-3 px-4 py-4">
-            <SkeletonBlock className="h-[22px] w-[106px] rounded-full bg-[var(--color-app-border-default)]" />
-            <SkeletonBlock className="h-7 w-full rounded-full bg-[var(--color-app-border-default)]" />
+            <SkeletonBlock className="h-6.5 w-full max-w-41 rounded-full bg-[var(--color-app-border-default)]" />
+            <SkeletonBlock className="h-10 w-full rounded-full bg-[var(--color-app-border-default)]" />
           </View>
         </View>
       </PostCard>
@@ -37,26 +37,24 @@ function FeedPostCardComponent({ post, onPress }: FeedPostCardProps) {
   }
 
   return (
-    <PostCard onPress={() => onPress(post)}>
-      <View className="px-4 pt-4 pb-3">
-        <PostAuthorRow author={post.author} showVerified={false} avatarSize={38} />
+    <PostCard className="gap-2 px-4 py-3" onPress={() => onPress(post)}>
+      <PostAuthorRow author={post.author} showVerified={false} avatarSize={38} />
+      <View className="-mx-4 mt-2">
+        <PostImage uri={post.coverUrl} alt={post.title} rounded={0} />
       </View>
-      <PostImage uri={post.coverUrl} alt={post.title} height={236} rounded={0} />
-      <View className="gap-3 px-4 py-4">
-        <PostTextBlock
-          title={post.title}
-          text={post.preview}
-          maxLines={4}
-          actionLabel={shouldShowMore ? "Показать еще" : undefined}
-          onActionPress={shouldShowMore ? () => onPress(post) : undefined}
-        />
-        <PostStatsRow
-          likesCount={post.likesCount}
-          commentsCount={post.commentsCount}
-          isLiked={post.isLiked}
-          variant="feed"
-        />
-      </View>
+      <PostTextBlock
+        title={post.title}
+        text={post.preview}
+        maxLines={4}
+        actionLabel={shouldShowMore ? "Показать еще" : undefined}
+        onActionPress={shouldShowMore ? () => onPress(post) : undefined}
+      />
+      <PostStatsRow
+        likesCount={post.likesCount}
+        commentsCount={post.commentsCount}
+        isLiked={post.isLiked}
+        variant="feed"
+      />
     </PostCard>
   );
 }

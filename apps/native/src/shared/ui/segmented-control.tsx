@@ -37,7 +37,7 @@ export function SegmentedControl<TValue extends string>({
   );
   const translateX = useSharedValue(0);
 
-  const tabWidth = containerWidth > 0 ? (containerWidth - 8) / options.length : 0;
+  const tabWidth = containerWidth > 0 ? containerWidth / options.length : 0;
 
   useEffect(() => {
     if (!tabWidth) {
@@ -50,8 +50,15 @@ export function SegmentedControl<TValue extends string>({
     });
   }, [activeIndex, tabWidth, translateX]);
 
+  const pillPressProgress = useSharedValue(0);
+
   const activePillStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
+    backgroundColor: interpolateColor(
+      pillPressProgress.value,
+      [0, 1],
+      ["#6115CD", "#4E11A4"],
+    ),
   }));
 
   const handleLayout = (event: LayoutChangeEvent) => {
@@ -61,20 +68,15 @@ export function SegmentedControl<TValue extends string>({
   return (
     <View
       onLayout={handleLayout}
-      className="flex-row rounded-full border border-[var(--color-app-border-default)] bg-[var(--color-app-surface-default)] p-1"
+      className="flex-row rounded-full border border-[var(--color-app-border-default)] bg-[var(--color-app-surface-default)]"
       style={disabled ? { opacity: 0.45 } : undefined}
       pointerEvents={disabled ? "none" : "auto"}
     >
       {tabWidth ? (
         <Animated.View
           pointerEvents="none"
-          className="absolute bottom-1 left-1 top-1 rounded-full bg-[var(--color-app-brand-primary)]"
-          style={[
-            {
-              width: tabWidth,
-            },
-            activePillStyle,
-          ]}
+          className="absolute inset-0 rounded-full"
+          style={[{ width: tabWidth }, activePillStyle]}
         />
       ) : null}
       {options.map((option) => (
@@ -83,6 +85,16 @@ export function SegmentedControl<TValue extends string>({
           isActive={option.value === value}
           label={option.label}
           onPress={() => onChange(option.value)}
+          onPressIn={
+            option.value === value
+              ? () => { pillPressProgress.value = withTiming(1, { duration: 100 }); }
+              : undefined
+          }
+          onPressOut={
+            option.value === value
+              ? () => { pillPressProgress.value = withTiming(0, { duration: 200 }); }
+              : undefined
+          }
         />
       ))}
     </View>
@@ -93,12 +105,16 @@ type SegmentedControlItemProps = {
   label: string;
   isActive: boolean;
   onPress: () => void;
+  onPressIn?: () => void;
+  onPressOut?: () => void;
 };
 
 export function SegmentedControlItem({
   label,
   isActive,
   onPress,
+  onPressIn,
+  onPressOut,
 }: SegmentedControlItemProps) {
   const progress = useSharedValue(isActive ? 1 : 0);
 
@@ -120,12 +136,21 @@ export function SegmentedControlItem({
 
   return (
     <Pressable
-      className={cn("flex-1 rounded-full px-4 py-3")}
+      className={cn("flex-1 rounded-full p-2.5")}
       onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
     >
       <AnimatedText
-        className="text-center text-sm font-semibold"
-        style={labelStyle}
+        className={cn("text-center", isActive ? "font-bold" : "font-medium")}
+        style={[
+          {
+            fontSize: 13,
+            lineHeight: 18,
+            fontVariant: ["lining-nums", "tabular-nums"],
+          },
+          labelStyle,
+        ]}
       >
         {label}
       </AnimatedText>

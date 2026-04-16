@@ -26,7 +26,7 @@ export function PostAuthorRow({
         <Avatar name={author.displayName} uri={author.avatarUrl} size={avatarSize} accent />
         <View className="flex-1">
           <View className="flex-row items-center gap-1.5">
-            <Text className="text-base text-neutral-950 font-semibold">
+            <Text className="text-[15px] leading-5 tracking-[0px] text-neutral-950 font-bold lining-nums tabular-nums stacked-fractions">
               {author.displayName}
             </Text>
             {showVerified && author.isVerified ? (

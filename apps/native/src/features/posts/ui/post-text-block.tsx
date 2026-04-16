@@ -24,17 +24,17 @@ export function PostTextBlock({
       {title ? (
         <Text
           className={cn(
-            "text-neutral-950 font-semibold",
+            "text-neutral-950 font-bold lining-nums tabular-nums stacked-fractions",
             titleSize === "xl"
               ? "text-[32px] leading-[40px] tracking-[-0.8px]"
-              : "text-[22px] leading-[30px] tracking-[-0.4px]",
+              : "text-[18px] leading-[26px] tracking-[0px]",
           )}
         >
           {title}
         </Text>
       ) : null}
       <Text
-        className="text-base leading-7 text-neutral-600 font-medium"
+        className="text-[15px] leading-5 tracking-[0px] text-neutral-600 font-medium lining-nums tabular-nums stacked-fractions"
         numberOfLines={maxLines}
       >
         {text}

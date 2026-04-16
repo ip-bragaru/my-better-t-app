@@ -5,11 +5,11 @@ const chipContainer = tv({
   base: "flex-row items-center rounded-full",
   variants: {
     active: {
-      true: "bg-[var(--color-app-brand-soft)]",
-      false: "bg-[var(--color-app-surface-muted)]",
+      true: "bg-[#FF2B75] group-hover:bg-[#EA276B] group-active:bg-[#DE2465] group-disabled:bg-[#FFBAD2]",
+      false: "bg-[#EFF2F7] group-active:bg-[#D4D4D4] group-disabled:bg-white",
     },
     size: {
-      sm: "gap-[6px] px-3 py-2",
+      sm: "gap-1 py-[6px] pl-[6px] pr-3",
       md: "gap-2 px-4 py-3",
     },
   },
@@ -20,7 +20,7 @@ const chipLabel = tv({
   base: "font-semibold",
   variants: {
     active: {
-      true: "text-[var(--color-app-brand-strong)]",
+      true: "text-white",
       false: "text-[var(--color-app-text-primary)]",
     },
     size: {
@@ -51,7 +51,7 @@ export function ActionChip({
     <Container
       {...props}
       accessibilityRole={props.onPress ? "button" : undefined}
-      className={props.onPress ? "active:opacity-90 disabled:opacity-45" : undefined}
+      className={props.onPress ? "group disabled:opacity-45" : undefined}
     >
       <View className={chipContainer({ active, size })}>
         {icon}

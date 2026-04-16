@@ -7,6 +7,18 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
+    "generate:tokens": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "tokens/design-tokens.json",
+        "scripts/generate-design-tokens.mjs"
+      ],
+      "outputs": [
+        "styles/theme.css",
+        "src/shared/config/design-tokens.generated.ts",
+        "src/shared/config/fonts.ts"
+      ]
+    },
     "lint": {
       "dependsOn": ["^lint"]
     },
