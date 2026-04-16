@@ -46,16 +46,16 @@ export function CommentList({
         />
       }
       ListHeaderComponent={
-        <View className="px-4 pb-5" style={{ paddingTop: insets.top + 12 }}>
+        <View style={{ paddingTop: insets.top + 12 }}>
           {postHeader}
-          <View className="h-5" />
-          {commentsHeader}
+          <View className="bg-white px-4 pb-2">
+            {commentsHeader}
+          </View>
         </View>
       }
-      ItemSeparatorComponent={CommentItemSeparator}
-      ListEmptyComponent={<View className="px-5">{emptyState}</View>}
+      ListEmptyComponent={<View className="bg-white px-5">{emptyState}</View>}
       ListFooterComponent={
-        <View className="px-5">
+        <View className="bg-white px-5 pb-5">
           {footer}
         </View>
       }
@@ -69,12 +69,9 @@ function keyExtractor(item: Comment) {
 
 function renderCommentItem({ item }: ListRenderItemInfo<Comment>) {
   return (
-    <View className="px-5">
+    <View className="bg-white px-5 py-2">
       <CommentItem comment={item} />
     </View>
   );
 }
 
-function CommentItemSeparator() {
-  return <View className="h-5" />;
-}

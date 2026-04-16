@@ -1,6 +1,5 @@
+import { useState } from "react";
 import { TextInput, View, type TextInputProps } from "react-native";
-
-import { cn } from "@shared/lib/cn";
 
 type TextFieldProps = TextInputProps & {
   leadingSlot?: React.ReactNode;
@@ -11,23 +10,63 @@ export function TextField({
   leadingSlot,
   trailingSlot,
   multiline,
+  editable = true,
+  onFocus,
+  onBlur,
   ...props
 }: TextFieldProps) {
+  const [focused, setFocused] = useState(false);
+
+  const disabled = editable === false;
+
+  const backgroundColor = disabled || focused ? "#FFFFFF" : "#EFF2F7";
+  const borderColor = focused && !disabled ? "#EFF2F7" : "transparent";
+  const textColor = disabled ? "#DCDCDD" : "#000000";
+  const placeholderColor = disabled ? "#DCDCDD" : "#57626F";
+
   return (
-    <View className="rounded-[24px] border border-[var(--color-app-border-default)] bg-[var(--color-app-surface-default)] px-4 py-3">
-      <View className="flex-row items-start gap-3">
-        {leadingSlot}
-        <TextInput
-          className={cn(
-            "flex-1 text-base leading-6 text-[var(--color-app-text-primary)] font-medium",
-            multiline ? "min-h-11" : null,
-            props.editable === false ? "opacity-50" : null,
-          )}
-          multiline={multiline}
-          {...props}
-        />
-        {trailingSlot}
-      </View>
+    <View
+      style={{
+        borderRadius: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        minHeight: 40,
+        backgroundColor,
+        borderWidth: 2,
+        borderColor,
+      }}
+    >
+      {leadingSlot}
+      <TextInput
+        style={[
+          {
+            flex: 1,
+            fontSize: 15,
+            lineHeight: 20,
+            fontFamily: "Manrope",
+            fontWeight: "500",
+            color: textColor,
+            padding: 0,
+          },
+          multiline ? { minHeight: 44 } : null,
+        ]}
+        placeholderTextColor={placeholderColor}
+        multiline={multiline}
+        editable={editable}
+        onFocus={(e) => {
+          setFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setFocused(false);
+          onBlur?.(e);
+        }}
+        {...props}
+      />
+      {trailingSlot}
     </View>
   );
 }

@@ -1,6 +1,7 @@
+import { Ionicons } from "@expo/vector-icons";
 import { observer } from "mobx-react-lite";
-import { Link, Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useMemo } from "react";
+import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useEffect, useMemo } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, Text, View } from "react-native";
 
 import { useCommentsQuery } from "@features/comments/hooks/use-comments-query";
@@ -11,9 +12,11 @@ import { CommentsSectionHeader } from "@features/comments/ui/comments-section-he
 import { DetailPostHeader } from "@features/posts/ui/detail-post-header";
 import { useToggleLikeMutation } from "@features/post-detail/hooks/use-toggle-like-mutation";
 import { usePostDetailQuery } from "@features/post-detail/hooks/use-post-detail-query";
-import { LikeButton } from "@features/post-detail/ui/like-button";
 import { PostDetailSkeleton } from "@features/post-detail/ui/post-detail-skeleton";
 import { useSession } from "@features/session/hooks/use-session";
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { formatCompactCount } from "@shared/lib/formatters";
+import { ActionChip } from "@shared/ui/action-chip";
 import { ScreenContainer } from "@shared/ui/screen-container";
 import { PaginationFooter } from "@shared/ui/pagination-footer";
 import { EmptyState, ErrorState, LoadingState } from "@shared/ui/screen-state";
@@ -59,6 +62,14 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     },
     [commentsQuery.data],
   );
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (postQuery.data?.tier === "paid") {
+      router.replace("/");
+    }
+  }, [postQuery.data, router]);
 
   const {
     hasNextPage: commentsHasNextPage,
@@ -137,11 +148,19 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
             <DetailPostHeader
               post={post}
               likeSlot={
-                <LikeButton
-                  isLiked={post.isLiked}
-                  likesCount={post.likesCount}
-                  disabled={likeMutation.isPending}
+                <ActionChip
+                  active={post.isLiked}
+                  size="sm"
+                  label={formatCompactCount(post.likesCount)}
+                  icon={
+                    <Ionicons
+                      name={post.isLiked ? "heart" : "heart-outline"}
+                      size={16}
+                      color={post.isLiked ? "#FFEAF1" : DESIGN_TOKENS.color.text.primary}
+                    />
+                  }
                   onPress={() => likeMutation.mutate()}
+                  disabled={likeMutation.isPending}
                 />
               }
             />
@@ -178,7 +197,7 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[var(--color-app-canvas-default)]">
+    <View className="flex-1 bg-[#F5F8FD]">
       <Stack.Screen options={{ headerShown: false }} />
       {renderContent()}
     </View>

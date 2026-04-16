@@ -15,9 +15,9 @@ export function CommentsSectionHeader({
   onActionPress,
 }: CommentsSectionHeaderProps) {
   return (
-    <View className="mt-2 flex-row items-center justify-between gap-3">
-      <Text className="text-xl text-neutral-950 font-semibold">
-        {count} комментариев
+    <View className="flex-row items-center justify-between gap-3">
+      <Text className="text-[15px] leading-5 tracking-[0px] text-[#68727D] font-semibold lining-nums tabular-nums stacked-fractions">
+        {count} комментария
       </Text>
       <Pressable className="flex-row items-center gap-1" onPress={onActionPress}>
         <Text className="text-sm font-medium text-[#5831e8]">

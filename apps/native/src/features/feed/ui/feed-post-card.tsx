@@ -21,7 +21,7 @@ function FeedPostCardComponent({ post, onPress }: FeedPostCardProps) {
 
   if (post.tier === "paid") {
     return (
-      <PostCard onPress={() => onPress(post)}>
+      <PostCard>
         <View className="gap-0">
           <View className="px-4 py-4">
             <PostAuthorRow author={post.author} showVerified={false} />
