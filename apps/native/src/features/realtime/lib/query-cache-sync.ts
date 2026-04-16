@@ -71,9 +71,8 @@ export function syncCommentAdded(queryClient: QueryClient, comment: Comment) {
       }
 
       const sanitizedCurrent = sanitizeCommentPages(current);
-      const [firstPage, ...restPages] = sanitizedCurrent.pages;
 
-      if (!firstPage) {
+      if (sanitizedCurrent.pages.length === 0) {
         return sanitizedCurrent;
       }
 
@@ -87,15 +86,15 @@ export function syncCommentAdded(queryClient: QueryClient, comment: Comment) {
         updatePost(post, { commentsCount: post.commentsCount + 1 }),
       );
 
+      const lastIndex = sanitizedCurrent.pages.length - 1;
+
       return {
         ...sanitizedCurrent,
-        pages: [
-          {
-            ...firstPage,
-            items: [comment, ...firstPage.items],
-          },
-          ...restPages,
-        ],
+        pages: sanitizedCurrent.pages.map((page, i) =>
+          i === lastIndex
+            ? { ...page, items: [...page.items, comment] }
+            : page,
+        ),
       };
     },
   );

@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useSession } from "@features/session/hooks/use-session";
 import { useFeedQuery } from "@features/feed/hooks/use-feed-query";
@@ -17,6 +18,7 @@ import type { FeedFilter, Post } from "@shared/model/types";
 export const FeedScreen = observer(function FeedScreen() {
   const { token, isReady } = useSession();
   const [filter, setFilter] = useState<FeedFilter>("all");
+  const insets = useSafeAreaInsets();
 
   const feedQuery = useFeedQuery({
     token: token ?? "",
@@ -78,7 +80,7 @@ export const FeedScreen = observer(function FeedScreen() {
           />
         }
         ListHeaderComponent={
-          <View className="px-4 pb-4 pt-4">
+          <View className="px-4 pb-4" style={{ paddingTop: insets.top + 16 }}>
             <FeedFilterTabs value={filter} onChange={setFilter} />
           </View>
         }
@@ -99,7 +101,7 @@ export const FeedScreen = observer(function FeedScreen() {
           </View>
         }
         ListFooterComponent={
-          <View className="px-4 pb-8 pt-4">
+          <View className="px-4 pt-4" style={{ paddingBottom: insets.bottom + 32 }}>
             {posts.length > 0 ? (
               <PaginationFooter
                 isFetchingNextPage={feedQuery.isFetchingNextPage}

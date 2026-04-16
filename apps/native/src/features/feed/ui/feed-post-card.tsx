@@ -24,7 +24,7 @@ function FeedPostCardComponent({ post, onPress }: FeedPostCardProps) {
       <PostCard onPress={() => onPress(post)}>
         <View className="gap-0">
           <View className="px-4 py-4">
-            <PostAuthorRow author={post.author} showVerified={false} avatarSize={38} />
+            <PostAuthorRow author={post.author} showVerified={false} />
           </View>
           <PaidPostCover coverUrl={post.coverUrl} />
           <View className="gap-3 px-4 py-4">
@@ -38,7 +38,7 @@ function FeedPostCardComponent({ post, onPress }: FeedPostCardProps) {
 
   return (
     <PostCard className="gap-2 px-4 py-3" onPress={() => onPress(post)}>
-      <PostAuthorRow author={post.author} showVerified={false} avatarSize={38} />
+      <PostAuthorRow author={post.author} showVerified={false} />
       <View className="-mx-4 mt-2">
         <PostImage uri={post.coverUrl} alt={post.title} rounded={0} />
       </View>

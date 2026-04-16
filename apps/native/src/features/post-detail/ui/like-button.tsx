@@ -1,9 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { useEffect } from "react";
-import { Pressable, TextInput, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import Animated, {
-  useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
   withSequence,
@@ -15,10 +13,6 @@ import { cn } from "@shared/lib/cn";
 import { formatCompactCount } from "@shared/lib/formatters";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
-
-// Required for animated text on both platforms
-Animated.addWhitelistedNativeProps({ text: true });
 
 type LikeButtonProps = {
   isLiked: boolean;
@@ -30,11 +24,6 @@ type LikeButtonProps = {
 export function LikeButton({ isLiked, likesCount, disabled, onPress }: LikeButtonProps) {
   const scale = useSharedValue(1);
   const countScale = useSharedValue(1);
-  const animatedCount = useSharedValue(likesCount);
-
-  useEffect(() => {
-    animatedCount.value = withTiming(likesCount, { duration: 350 });
-  }, [animatedCount, likesCount]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -42,11 +31,6 @@ export function LikeButton({ isLiked, likesCount, disabled, onPress }: LikeButto
 
   const animatedCountStyle = useAnimatedStyle(() => ({
     transform: [{ scale: countScale.value }],
-  }));
-
-  const animatedCountProps = useAnimatedProps(() => ({
-    text: `${formatCompactCount(Math.round(animatedCount.value))} likes`,
-    defaultValue: `${formatCompactCount(likesCount)} likes`,
   }));
 
   const handlePress = () => {
@@ -80,17 +64,16 @@ export function LikeButton({ isLiked, likesCount, disabled, onPress }: LikeButto
         />
       </View>
       <Animated.View style={animatedCountStyle}>
-        <AnimatedTextInput
-          editable={false}
-          underlineColorAndroid="transparent"
-          animatedProps={animatedCountProps}
+        <Text
           className={cn(
-            "p-0 text-sm font-semibold",
+            "text-sm font-semibold",
             isLiked
               ? "text-[var(--color-app-brand-strong)]"
               : "text-[var(--color-app-text-primary)]",
           )}
-        />
+        >
+          {formatCompactCount(likesCount)} likes
+        </Text>
       </Animated.View>
     </AnimatedPressable>
   );

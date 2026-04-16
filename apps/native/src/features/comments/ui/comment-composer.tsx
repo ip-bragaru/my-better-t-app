@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { IconButton } from "@shared/ui/icon-button";
 import { TextField } from "@shared/ui/text-field";
@@ -12,6 +13,7 @@ type CommentComposerProps = {
 
 export function CommentComposer({ isSubmitting, onSubmit }: CommentComposerProps) {
   const [value, setValue] = useState("");
+  const insets = useSafeAreaInsets();
 
   const trimmedValue = value.trim();
   const canSubmit = trimmedValue.length >= 1 && trimmedValue.length <= 500 && !isSubmitting;
@@ -26,7 +28,7 @@ export function CommentComposer({ isSubmitting, onSubmit }: CommentComposerProps
   };
 
   return (
-    <View className="border-t border-[var(--color-app-border-default)] bg-[var(--color-app-canvas-elevated)] px-5 pb-6 pt-4">
+    <View className="border-t border-[var(--color-app-border-default)] bg-[var(--color-app-canvas-elevated)] px-5 pt-4" style={{ paddingBottom: insets.bottom + 24 }}>
       <TextField
         multiline
         maxLength={500}

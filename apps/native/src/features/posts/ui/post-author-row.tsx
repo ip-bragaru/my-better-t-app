@@ -16,14 +16,13 @@ type PostAuthorRowProps = {
 export function PostAuthorRow({
   author,
   subtitle,
-  avatarSize = 44,
   trailingSlot,
   showVerified = true,
 }: PostAuthorRowProps) {
   return (
     <View className="flex-row items-center justify-between gap-3">
       <View className="flex-1 flex-row items-center gap-3">
-        <Avatar name={author.displayName} uri={author.avatarUrl} size={avatarSize} accent />
+        <Avatar name={author.displayName} uri={author.avatarUrl} accent />
         <View className="flex-1">
           <View className="flex-row items-center gap-1.5">
             <Text className="text-[15px] leading-5 tracking-[0px] text-neutral-950 font-bold lining-nums tabular-nums stacked-fractions">

@@ -13,13 +13,7 @@ function StackLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="post/[postId]"
-        options={{
-          headerBackButtonDisplayMode: "minimal",
-          headerTitle: () => <Text className="text-base text-neutral-950 font-semibold">Post</Text>,
-        }}
-      />
+      <Stack.Screen name="post/[postId]" options={{ headerShown: false }} />
       <Stack.Screen
         name="+not-found"
         options={{
@@ -46,6 +40,7 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView className="flex-1">
+
       <AppThemeProvider>
         <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
           <AppProviders>

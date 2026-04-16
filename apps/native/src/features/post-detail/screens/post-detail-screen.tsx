@@ -84,60 +84,46 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     commentsRefetch();
   }, [commentsRefetch, postQuery]);
 
-  if (!isReady) {
-    return <LoadingState message="Preparing your session..." />;
-  }
+  const renderContent = () => {
+    if (!isReady) {
+      return <LoadingState message="Preparing your session..." />;
+    }
 
-  if (!postId) {
+    if (!postId) {
+      return (
+        <ScreenContainer className="items-center justify-center px-8">
+          <Text className="text-center text-2xl text-neutral-950 font-semibold">
+            Invalid post link
+          </Text>
+          <Text className="mt-3 text-center text-sm leading-6 text-neutral-500 font-medium">
+            This detail route is missing a valid post identifier.
+          </Text>
+          <Link href="../" asChild>
+            <Pressable className="mt-5 rounded-full bg-neutral-900 px-5 py-3">
+              <Text className="text-sm text-white font-semibold">
+                Back to feed
+              </Text>
+            </Pressable>
+          </Link>
+        </ScreenContainer>
+      );
+    }
+
+    if (postQuery.isLoading) {
+      return (
+        <ScreenContainer>
+          <PostDetailSkeleton />
+        </ScreenContainer>
+      );
+    }
+
+    if (postQuery.error || !postQuery.data) {
+      return <ErrorState error={postQuery.error} onRetry={postQuery.refetch} />;
+    }
+
+    const post = postQuery.data;
+
     return (
-      <ScreenContainer className="items-center justify-center px-8">
-        <Text className="text-center text-2xl text-neutral-950 font-semibold">
-          Invalid post link
-        </Text>
-        <Text className="mt-3 text-center text-sm leading-6 text-neutral-500 font-medium">
-          This detail route is missing a valid post identifier.
-        </Text>
-        <Link href="../" asChild>
-          <Pressable className="mt-5 rounded-full bg-neutral-900 px-5 py-3">
-            <Text className="text-sm text-white font-semibold">
-              Back to feed
-            </Text>
-          </Pressable>
-        </Link>
-      </ScreenContainer>
-    );
-  }
-
-  if (postQuery.isLoading) {
-    return (
-      <ScreenContainer>
-        <PostDetailSkeleton />
-      </ScreenContainer>
-    );
-  }
-
-  if (postQuery.error || !postQuery.data) {
-    return <ErrorState error={postQuery.error} onRetry={postQuery.refetch} />;
-  }
-
-  const post = postQuery.data;
-
-  return (
-    <>
-      <Stack.Screen
-        options={{
-          headerBackButtonDisplayMode: "minimal",
-          headerTitle: () => (
-            <Text
-              className="text-base text-neutral-950 font-semibold"
-              numberOfLines={1}
-            >
-              {post.title}
-            </Text>
-          ),
-        }}
-      />
-
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.select({ ios: "padding", android: undefined })}
@@ -188,7 +174,14 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
           onSubmit={handleSubmitComment}
         />
       </KeyboardAvoidingView>
-    </>
+    );
+  };
+
+  return (
+    <View className="flex-1 bg-[var(--color-app-canvas-default)]">
+      <Stack.Screen options={{ headerShown: false }} />
+      {renderContent()}
+    </View>
   );
 });
 

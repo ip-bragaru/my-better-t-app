@@ -1,33 +1,56 @@
-import { memo } from "react";
-import { Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import { memo, useState } from "react";
+import { Pressable, Text, View } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from "react-native-reanimated";
 
 import type { Comment } from "@shared/model/types";
-import { ActionChip } from "@shared/ui/action-chip";
 import { Avatar } from "@shared/ui/avatar";
-import { formatRelativeDate } from "@shared/lib/formatters";
 
 type CommentItemProps = {
   comment: Comment;
-  likeLabel?: string;
+  likesCount?: number;
+  isLiked?: boolean;
 };
 
-function CommentItemComponent({ comment, likeLabel }: CommentItemProps) {
+function CommentItemComponent({ comment, likesCount = 0, isLiked: initialIsLiked = false }: CommentItemProps) {
+  const [liked, setLiked] = useState(initialIsLiked);
+  const [count, setCount] = useState(likesCount);
+
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  const handleLike = () => {
+    Haptics.selectionAsync();
+    scale.value = withSequence(withTiming(0.7, { duration: 80 }), withSpring(1, { damping: 18, stiffness: 200 }));
+    setLiked((prev) => {
+      setCount((c) => prev ? c - 1 : c + 1);
+      return !prev;
+    });
+  };
+
   return (
-    <View className="flex-row gap-3">
-      <Avatar name={comment.author.displayName} uri={comment.author.avatarUrl} size={38} accent />
-      <View className="flex-1 rounded-[24px] bg-white p-4">
-        <View className="flex-row items-start justify-between gap-3">
-          <View className="flex-1">
-            <Text className="text-sm text-neutral-950 font-semibold">
-              {comment.author.displayName}
-            </Text>
-            <Text className="mt-1 text-xs uppercase tracking-[1.2px] text-neutral-400 font-medium">
-              {formatRelativeDate(comment.createdAt)}
-            </Text>
-          </View>
-          {likeLabel ? <ActionChip label={likeLabel} /> : null}
+    <View className="flex-row items-start gap-3">
+      <Avatar name={comment.author.displayName} uri={comment.author.avatarUrl} size={44} accent />
+      <View className="flex-1 flex-row items-start justify-between gap-3">
+        <View className="flex-1">
+          <Text className="text-[15px] leading-5 text-neutral-950 font-bold">
+            {comment.author.displayName}
+          </Text>
+          <Text className="mt-1 text-sm leading-5 text-neutral-600 font-medium">
+            {comment.text}
+          </Text>
         </View>
-        <Text className="mt-3 text-sm leading-6 text-neutral-600 font-medium">{comment.text}</Text>
+        <Pressable onPress={handleLike} hitSlop={10}>
+          <Animated.View className="mt-0.5 items-center gap-1" style={animatedStyle}>
+            <Ionicons
+              name={liked ? "heart" : "heart-outline"}
+              size={18}
+              color={liked ? "#F43F5E" : "#A3A3A3"}
+            />
+            <Text className="text-xs text-neutral-400 font-medium">{count}</Text>
+          </Animated.View>
+        </Pressable>
       </View>
     </View>
   );

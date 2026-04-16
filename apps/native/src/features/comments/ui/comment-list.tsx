@@ -1,4 +1,5 @@
 import { FlatList, RefreshControl, View, type ListRenderItemInfo } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { Comment } from "@shared/model/types";
 import { CommentItem } from "@features/comments/ui/comment-item";
@@ -24,6 +25,8 @@ export function CommentList({
   onRefresh,
   onEndReached,
 }: CommentListProps) {
+  const insets = useSafeAreaInsets();
+
   return (
     <FlatList
       data={comments}
@@ -35,7 +38,6 @@ export function CommentList({
       maxToRenderPerBatch={8}
       updateCellsBatchingPeriod={48}
       windowSize={8}
-      removeClippedSubviews
       refreshControl={
         <RefreshControl
           refreshing={isRefreshing}
@@ -44,7 +46,7 @@ export function CommentList({
         />
       }
       ListHeaderComponent={
-        <View className="px-5 pb-5 pt-5">
+        <View className="px-4 pb-5" style={{ paddingTop: insets.top + 12 }}>
           {postHeader}
           <View className="h-5" />
           {commentsHeader}
@@ -74,5 +76,5 @@ function renderCommentItem({ item }: ListRenderItemInfo<Comment>) {
 }
 
 function CommentItemSeparator() {
-  return <View className="h-3" />;
+  return <View className="h-5" />;
 }

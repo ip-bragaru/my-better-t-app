@@ -69,14 +69,12 @@ export function SegmentedControl<TValue extends string>({
     <View
       onLayout={handleLayout}
       className="flex-row rounded-full border border-[var(--color-app-border-default)] bg-[var(--color-app-surface-default)]"
-      style={disabled ? { opacity: 0.45 } : undefined}
-      pointerEvents={disabled ? "none" : "auto"}
+      style={disabled ? { opacity: 0.45, pointerEvents: "none" } : { pointerEvents: "auto" }}
     >
       {tabWidth ? (
         <Animated.View
-          pointerEvents="none"
           className="absolute inset-0 rounded-full"
-          style={[{ width: tabWidth }, activePillStyle]}
+          style={[{ width: tabWidth, pointerEvents: "none" }, activePillStyle]}
         />
       ) : null}
       {options.map((option) => (

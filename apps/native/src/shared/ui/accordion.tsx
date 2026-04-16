@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, Text, View, type PressableProps } from "react-native";
 import Animated, {
   Easing,
@@ -28,26 +28,25 @@ const accordionLabel = tv({
   },
 });
 
-// ─── Chevron icon (pure View, no extra dep) ──────────────────────────────────
+// ─── Chevron icon ─────────────────────────────────────────────────────────────
 
 function Chevron({ open }: { open: boolean }) {
   const rotation = useSharedValue(open ? 90 : 0);
+
+  useEffect(() => {
+    rotation.value = withTiming(open ? 90 : 0, {
+      duration: 200,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [open, rotation]);
 
   const style = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
 
-  if (open !== (rotation.value === 90)) {
-    rotation.value = withTiming(open ? 90 : 0, {
-      duration: 200,
-      easing: Easing.out(Easing.cubic),
-    });
-  }
-
   return (
     <Animated.View style={style}>
       <View className="h-5 w-5 items-center justify-center">
-        {/* Simple chevron drawn with two rotated views */}
         <View className="relative h-3 w-3">
           <View
             className="absolute left-0 top-[3px] h-[2px] w-[9px] rounded-full bg-[var(--color-app-brand-primary)]"
@@ -75,28 +74,28 @@ function AccordionContent({
   const height = useSharedValue(0);
   const [measuredHeight, setMeasuredHeight] = useState(0);
 
+  useEffect(() => {
+    if (!measuredHeight) return;
+    height.value = withTiming(open ? measuredHeight : 0, {
+      duration: 220,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [open, measuredHeight, height]);
+
   const animatedStyle = useAnimatedStyle(() => ({
     height: height.value,
     overflow: "hidden",
   }));
 
-  const onLayout = (h: number) => {
-    if (h === measuredHeight) return;
-    setMeasuredHeight(h);
-    height.value = open ? h : 0;
-  };
-
-  if (measuredHeight && open !== (height.value > 0)) {
-    height.value = withTiming(open ? measuredHeight : 0, {
-      duration: 220,
-      easing: Easing.out(Easing.cubic),
-    });
-  }
-
   return (
     <Animated.View style={animatedStyle}>
       <View
-        onLayout={(e) => onLayout(e.nativeEvent.layout.height)}
+        onLayout={(e) => {
+          const h = e.nativeEvent.layout.height;
+          if (h > 0 && h !== measuredHeight) {
+            setMeasuredHeight(h);
+          }
+        }}
         className="pb-4"
       >
         {children}
