@@ -16,11 +16,11 @@ export function CommentsSectionHeader({
 }: CommentsSectionHeaderProps) {
   return (
     <View className="flex-row items-center justify-between gap-3">
-      <Text className="text-[15px] leading-5 tracking-[0px] text-[#68727D] font-semibold lining-nums tabular-nums stacked-fractions">
+      <Text className="text-[15px] leading-5 tracking-[0px] text-[var(--color-app-text-subtle)] font-semibold lining-nums tabular-nums stacked-fractions">
         {count} комментария
       </Text>
       <Pressable className="flex-row items-center gap-1" onPress={onActionPress}>
-        <Text className="text-sm font-medium text-[#5831e8]">
+        <Text className="text-sm font-medium text-[var(--color-app-brand-strong)]">
           {actionLabel}
         </Text>
         <Ionicons

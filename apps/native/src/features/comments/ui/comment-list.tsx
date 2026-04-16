@@ -1,6 +1,7 @@
 import { FlatList, RefreshControl, View, type ListRenderItemInfo } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
 import type { Comment } from "@shared/model/types";
 import { CommentItem } from "@features/comments/ui/comment-item";
 
@@ -42,7 +43,7 @@ export function CommentList({
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          tintColor="#17131A"
+          tintColor={DESIGN_TOKENS.color.text.primary}
         />
       }
       ListHeaderComponent={

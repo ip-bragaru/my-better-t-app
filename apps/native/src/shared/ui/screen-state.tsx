@@ -1,6 +1,7 @@
 import { match } from "ts-pattern";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
 import { mapApiError } from "@shared/lib/error-mapper";
 
 type ScreenStateProps = {
@@ -35,8 +36,8 @@ export function ScreenState(props: ScreenStateProps) {
 export function LoadingState({ message }: { message: string }) {
   return (
     <View className="flex-1 items-center justify-center px-8">
-      <ActivityIndicator size="small" color="#17131A" />
-      <Text className="mt-4 text-center text-sm text-neutral-500 font-medium">{message}</Text>
+      <ActivityIndicator size="small" color={DESIGN_TOKENS.color.text.primary} />
+      <Text className="mt-4 text-center text-sm text-[var(--color-app-text-secondary)] font-medium">{message}</Text>
     </View>
   );
 }
@@ -50,10 +51,10 @@ export function EmptyState({
 }) {
   return (
     <View className="flex-1 items-center justify-center px-8">
-      <Text className="text-center text-xl text-neutral-900 font-semibold">
+      <Text className="text-center text-xl text-[var(--color-app-text-primary)] font-semibold">
         {title}
       </Text>
-      <Text className="mt-3 text-center text-sm leading-6 text-neutral-500 font-medium">
+      <Text className="mt-3 text-center text-sm leading-6 text-[var(--color-app-text-secondary)] font-medium">
         {message}
       </Text>
     </View>
@@ -71,18 +72,18 @@ export function ErrorState({
 
   return (
     <View className="flex-1 items-center justify-center px-8">
-      <Text className="text-center text-xl text-neutral-900 font-semibold">
+      <Text className="text-center text-xl text-[var(--color-app-text-primary)] font-semibold">
         Unable to load
       </Text>
-      <Text className="mt-3 text-center text-sm leading-6 text-neutral-500 font-medium">
+      <Text className="mt-3 text-center text-sm leading-6 text-[var(--color-app-text-secondary)] font-medium">
         {mappedError.message}
       </Text>
       {onRetry ? (
         <Pressable
-          className="mt-5 rounded-full bg-neutral-900 px-5 py-3"
+          className="mt-5 rounded-full bg-[var(--color-app-text-primary)] px-5 py-3"
           onPress={onRetry}
         >
-          <Text className="text-sm text-white font-semibold">
+          <Text className="text-sm text-[var(--color-app-text-inverse)] font-semibold">
             Try again
           </Text>
         </Pressable>

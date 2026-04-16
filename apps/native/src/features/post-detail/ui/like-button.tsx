@@ -9,6 +9,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
 import { cn } from "@shared/lib/cn";
 import { formatCompactCount } from "@shared/lib/formatters";
 
@@ -60,7 +61,7 @@ export function LikeButton({ isLiked, likesCount, disabled, onPress }: LikeButto
         <Ionicons
           name={isLiked ? "heart" : "heart-outline"}
           size={18}
-          color={isLiked ? "#5831E8" : "#17131A"}
+          color={isLiked ? DESIGN_TOKENS.color.brand.strong : DESIGN_TOKENS.color.text.primary}
         />
       </View>
       <Animated.View style={animatedCountStyle}>

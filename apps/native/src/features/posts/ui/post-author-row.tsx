@@ -25,7 +25,7 @@ export function PostAuthorRow({
         <Avatar name={author.displayName} uri={author.avatarUrl} accent />
         <View className="flex-1">
           <View className="flex-row items-center gap-1.5">
-            <Text className="text-[15px] leading-5 tracking-[0px] text-neutral-950 font-bold lining-nums tabular-nums stacked-fractions">
+            <Text className="text-[15px] leading-5 tracking-[0px] text-[var(--color-app-text-primary)] font-bold lining-nums tabular-nums stacked-fractions">
               {author.displayName}
             </Text>
             {showVerified && author.isVerified ? (
@@ -36,7 +36,7 @@ export function PostAuthorRow({
               />
             ) : null}
           </View>
-          {subtitle ? <Text className="mt-1 text-sm text-neutral-500 font-medium">{subtitle}</Text> : null}
+          {subtitle ? <Text className="mt-1 text-sm text-[var(--color-app-text-secondary)] font-medium">{subtitle}</Text> : null}
         </View>
       </View>
       {trailingSlot}

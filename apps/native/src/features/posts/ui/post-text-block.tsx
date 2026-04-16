@@ -24,7 +24,7 @@ export function PostTextBlock({
       {title ? (
         <Text
           className={cn(
-            "text-neutral-950 font-bold lining-nums tabular-nums stacked-fractions",
+            "text-[var(--color-app-text-primary)] font-bold lining-nums tabular-nums stacked-fractions",
             titleSize === "xl"
               ? "text-[32px] leading-[40px] tracking-[-0.8px]"
               : "text-[18px] leading-[26px] tracking-[0px]",
@@ -34,7 +34,7 @@ export function PostTextBlock({
         </Text>
       ) : null}
       <Text
-        className="text-[15px] leading-5 tracking-[0px] text-neutral-600 font-medium lining-nums tabular-nums stacked-fractions"
+        className="text-[15px] leading-5 tracking-[0px] text-[var(--color-app-text-secondary)] font-medium lining-nums tabular-nums stacked-fractions"
         numberOfLines={maxLines}
       >
         {text}

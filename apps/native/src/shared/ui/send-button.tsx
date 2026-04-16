@@ -1,5 +1,6 @@
 import { ActivityIndicator, Pressable, View, type PressableProps } from "react-native";
 
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
 import { cn } from "@shared/lib/cn";
 import { SendIcon } from "@shared/ui/send-icon";
 
@@ -27,17 +28,14 @@ export function SendButton({
       <View
         className={cn(
           "items-center justify-center rounded-full",
-          `h-[${size}px] w-[${size}px]`,
-          isDisabled
-            ? "bg-[var(--color-app-surface-muted)]"
-            : "bg-[var(--color-app-brand-soft)]",
+          isDisabled ? "bg-[var(--color-app-surface-muted)]" : "bg-[var(--color-app-brand-soft)]",
         )}
         style={{ width: size, height: size }}
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color="#5831E8" />
+          <ActivityIndicator size="small" color={DESIGN_TOKENS.color.brand.strong} />
         ) : (
-          <SendIcon color={isDisabled ? "#A3A3A3" : "#5831E8"} />
+          <SendIcon color={isDisabled ? DESIGN_TOKENS.color.brand.disabled : DESIGN_TOKENS.color.brand.strong} />
         )}
       </View>
     </Pressable>

@@ -5,6 +5,7 @@ import { FlatList, RefreshControl, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useSession } from "@features/session/hooks/use-session";
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
 import { useFeedQuery } from "@features/feed/hooks/use-feed-query";
 import { FeedFilterTabs } from "@features/feed/ui/feed-filter-tabs";
 import { FeedPostCard } from "@features/feed/ui/feed-post-card";
@@ -87,7 +88,7 @@ export const FeedScreen = observer(function FeedScreen() {
             refreshing={isManualRefreshing}
             onRefresh={handleRefresh}
             progressViewOffset={insets.top}
-            tintColor="#17131A"
+            tintColor={DESIGN_TOKENS.color.text.primary}
           />
         }
         ListHeaderComponent={
@@ -131,7 +132,7 @@ export const FeedScreen = observer(function FeedScreen() {
 
       {feedQuery.error && posts.length > 0 ? (
         <View className="absolute inset-x-5 bottom-6 rounded-3xl bg-[var(--color-app-surface-default)] p-4 shadow-sm">
-          <Text className="text-sm text-neutral-600 font-medium">
+          <Text className="text-sm text-[var(--color-app-text-secondary)] font-medium">
             Не удалось обновить ленту. Кешированные карточки остаются доступны.
           </Text>
           <View className="mt-3">

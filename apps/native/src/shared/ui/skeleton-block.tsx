@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { View, type ViewProps } from "react-native";
+
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -35,7 +37,7 @@ export function SkeletonBlock({ style, ...props }: ViewProps) {
       style={[
         {
           borderRadius: 16,
-          backgroundColor: "#e5e7eb",
+          backgroundColor: DESIGN_TOKENS.color.feedback.skeleton,
         },
         style,
         animatedStyle,

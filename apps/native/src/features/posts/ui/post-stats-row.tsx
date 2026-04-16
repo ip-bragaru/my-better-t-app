@@ -25,7 +25,7 @@ export function PostStatsRow({
   return (
     <View className="gap-3">
       {variant === "detail" && createdAt ? (
-        <Text className="text-xs uppercase tracking-[1.4px] text-neutral-400 font-medium">
+        <Text className="text-xs uppercase tracking-[1.4px] text-[var(--color-app-text-tertiary)] font-medium">
           {formatRelativeDate(createdAt)}
         </Text>
       ) : null}
@@ -45,7 +45,7 @@ export function PostStatsRow({
                 size={16}
                 color={
                   isLiked
-                    ? "#FFEAF1"
+                    ? DESIGN_TOKENS.color.feedback.like.surface
                     : DESIGN_TOKENS.color.text.primary
                 }
               />

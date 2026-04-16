@@ -31,8 +31,8 @@ export function CommentComposer({ isSubmitting, onSubmit }: CommentComposerProps
       className="border-t border-[var(--color-app-border-default)] bg-[var(--color-app-canvas-elevated)] px-5 pt-4"
       style={{ paddingBottom: insets.bottom + 16 }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-        <View style={{ flex: 1 }}>
+      <View className="flex-row items-center gap-2">
+        <View className="flex-1">
           <TextField
             maxLength={500}
             editable={!isSubmitting}

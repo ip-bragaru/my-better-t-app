@@ -103,15 +103,15 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     if (!postId) {
       return (
         <ScreenContainer className="items-center justify-center px-8">
-          <Text className="text-center text-2xl text-neutral-950 font-semibold">
+          <Text className="text-center text-2xl text-[var(--color-app-text-primary)] font-semibold">
             Invalid post link
           </Text>
-          <Text className="mt-3 text-center text-sm leading-6 text-neutral-500 font-medium">
+          <Text className="mt-3 text-center text-sm leading-6 text-[var(--color-app-text-secondary)] font-medium">
             This detail route is missing a valid post identifier.
           </Text>
           <Link href="../" asChild>
-            <Pressable className="mt-5 rounded-full bg-neutral-900 px-5 py-3">
-              <Text className="text-sm text-white font-semibold">
+            <Pressable className="mt-5 rounded-full bg-[var(--color-app-text-primary)] px-5 py-3">
+              <Text className="text-sm text-[var(--color-app-text-inverse)] font-semibold">
                 Back to feed
               </Text>
             </Pressable>
@@ -156,7 +156,7 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
                     <Ionicons
                       name={post.isLiked ? "heart" : "heart-outline"}
                       size={16}
-                      color={post.isLiked ? "#FFEAF1" : DESIGN_TOKENS.color.text.primary}
+                      color={post.isLiked ? DESIGN_TOKENS.color.feedback.like.surface : DESIGN_TOKENS.color.text.primary}
                     />
                   }
                   onPress={() => likeMutation.mutate()}
@@ -197,7 +197,7 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#F5F8FD]">
+    <View className="flex-1 bg-[var(--color-app-canvas-default)]">
       <Stack.Screen options={{ headerShown: false }} />
       {renderContent()}
     </View>

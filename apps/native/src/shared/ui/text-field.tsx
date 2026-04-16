@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { TextInput, View, type TextInputProps } from "react-native";
 
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+
 type TextFieldProps = TextInputProps & {
   leadingSlot?: React.ReactNode;
   trailingSlot?: React.ReactNode;
@@ -19,10 +21,10 @@ export function TextField({
 
   const disabled = editable === false;
 
-  const backgroundColor = disabled || focused ? "#FFFFFF" : "#EFF2F7";
-  const borderColor = focused && !disabled ? "#EFF2F7" : "transparent";
-  const textColor = disabled ? "#DCDCDD" : "#000000";
-  const placeholderColor = disabled ? "#DCDCDD" : "#57626F";
+  const backgroundColor = disabled || focused ? DESIGN_TOKENS.color.surface.default : DESIGN_TOKENS.color.surface.input;
+  const borderColor = focused && !disabled ? DESIGN_TOKENS.color.surface.input : "transparent";
+  const textColor = disabled ? DESIGN_TOKENS.color.text.disabled : DESIGN_TOKENS.color.text.primary;
+  const placeholderColor = disabled ? DESIGN_TOKENS.color.text.disabled : DESIGN_TOKENS.color.text.placeholder;
 
   return (
     <View

@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
 import type { Post } from "@shared/model/types";
 
 import { PostAuthorRow } from "@features/posts/ui/post-author-row";
@@ -29,8 +30,8 @@ export function DetailPostHeader({
           hitSlop={8}
           className="flex-row items-center gap-1.5 self-start h-9.5 mt-1 mb-3.5"
         >
-          <Ionicons name="chevron-back" size={18} color="#5831E8" />
-          <Text className="text-sm font-semibold text-[#5831E8]">
+          <Ionicons name="chevron-back" size={18} color={DESIGN_TOKENS.color.brand.strong} />
+          <Text className="text-sm font-semibold text-[var(--color-app-brand-strong)]">
             {canGoBack ? "Назад" : "К Постам"}
           </Text>
         </Pressable>

@@ -8,7 +8,7 @@ const buttonInner = tv({
   base: "flex-row items-center justify-center gap-2 rounded-[14px]",
   variants: {
     variant: {
-      accent: "bg-[#6115CD] group-hover:bg-[#4E11A4] group-disabled:bg-[#D5C9FF]",
+      accent: "bg-[var(--color-app-brand-primary)] group-hover:bg-[var(--color-app-brand-pressed)] group-disabled:bg-[var(--color-app-brand-disabled)]",
       neutral: "bg-[var(--color-app-surface-muted)] group-disabled:opacity-45",
       ghost: "bg-transparent group-disabled:opacity-45",
     },
@@ -24,7 +24,7 @@ const buttonLabel = tv({
   base: "text-center font-semibold",
   variants: {
     variant: {
-      accent: "text-white group-hover:text-[#DFD0F5]",
+      accent: "text-[var(--color-app-text-inverse)] group-hover:text-[var(--color-app-brand-pressed-text)]",
       neutral: "text-[var(--color-app-text-primary)]",
       ghost: "text-[var(--color-app-brand-primary)]",
     },
@@ -74,7 +74,7 @@ export function Button({
         {isLoading ? (
           <ActivityIndicator
             size="small"
-            color={variant === "accent" ? "#4E11A4" : DESIGN_TOKENS.color.brand.primary}
+            color={variant === "accent" ? DESIGN_TOKENS.color.brand.pressed : DESIGN_TOKENS.color.brand.primary}
           />
         ) : (
           <>

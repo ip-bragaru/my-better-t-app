@@ -8,6 +8,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { DESIGN_TOKENS } from "@shared/config/design-tokens";
 import { cn } from "@shared/lib/cn";
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
@@ -57,7 +58,7 @@ export function SegmentedControl<TValue extends string>({
     backgroundColor: interpolateColor(
       pillPressProgress.value,
       [0, 1],
-      ["#6115CD", "#4E11A4"],
+      [DESIGN_TOKENS.color.brand.primary, DESIGN_TOKENS.color.brand.pressed],
     ),
   }));
 
@@ -127,7 +128,7 @@ export function SegmentedControlItem({
     color: interpolateColor(
       progress.value,
       [0, 1],
-      ["#6F6470", "#ffffff"],
+      [DESIGN_TOKENS.color.text.secondary, DESIGN_TOKENS.color.text.inverse],
     ),
     transform: [{ scale: 0.98 + progress.value * 0.02 }],
   }));

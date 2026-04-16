@@ -15,7 +15,9 @@ export const DESIGN_TOKENS = {
     surface: {
       default: "#FFFFFF",
       muted: "#F1EBE5",
-      accent: "#F2EDFF"
+      accent: "#F2EDFF",
+      input: "#EFF2F7",
+      inputActive: "#D4D4D4"
     },
     border: {
       default: "#E8ECEF",
@@ -25,12 +27,25 @@ export const DESIGN_TOKENS = {
       primary: "#17131A",
       secondary: "#6F6470",
       muted: "#9A8F98",
+      subtle: "#68727D",
+      placeholder: "#57626F",
+      disabled: "#DCDCDD",
+      tertiary: "#A3A3A3",
       inverse: "#FFFFFF"
     },
     brand: {
       primary: "#6115CD",
       strong: "#5831E8",
-      soft: "#EEE7FF"
+      soft: "#EEE7FF",
+      pressed: "#4E11A4",
+      pressedText: "#DFD0F5",
+      disabled: "#D5C9FF"
+    },
+    action: {
+      default: "#FF2B75",
+      hover: "#EA276B",
+      active: "#DE2465",
+      disabled: "#FFBAD2"
     },
     feedback: {
       success: {
@@ -44,10 +59,16 @@ export const DESIGN_TOKENS = {
       danger: {
         surface: "#FDE9EF",
         text: "#B43B69"
-      }
+      },
+      like: {
+        surface: "#FFEAF1",
+        icon: "#F43F5E"
+      },
+      skeleton: "#E5E7EB"
     },
     overlay: {
-      soft: "rgba(23, 19, 26, 0.04)"
+      soft: "rgba(23, 19, 26, 0.04)",
+      medium: "rgba(16, 16, 22, 0.52)"
     }
   },
   radius: {

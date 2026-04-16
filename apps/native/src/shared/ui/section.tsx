@@ -16,12 +16,12 @@ export function Section({ title, subtitle, children, className, ...props }: Sect
       {title || subtitle ? (
         <View className="gap-2">
           {title ? (
-            <Text className="text-3xl tracking-[-0.9px] text-neutral-950 font-semibold">
+            <Text className="text-3xl tracking-[-0.9px] text-[var(--color-app-text-primary)] font-semibold">
               {title}
             </Text>
           ) : null}
           {subtitle ? (
-            <Text className="text-base leading-7 text-neutral-500 font-medium">{subtitle}</Text>
+            <Text className="text-base leading-7 text-[var(--color-app-text-secondary)] font-medium">{subtitle}</Text>
           ) : null}
         </View>
       ) : null}

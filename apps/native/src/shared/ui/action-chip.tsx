@@ -5,8 +5,8 @@ const chipContainer = tv({
   base: "flex-row items-center rounded-full",
   variants: {
     active: {
-      true: "bg-[#FF2B75] group-hover:bg-[#EA276B] group-active:bg-[#DE2465] group-disabled:bg-[#FFBAD2]",
-      false: "bg-[#EFF2F7] group-active:bg-[#D4D4D4] group-disabled:bg-white",
+      true: "bg-[var(--color-app-action-default)] group-hover:bg-[var(--color-app-action-hover)] group-active:bg-[var(--color-app-action-active)] group-disabled:bg-[var(--color-app-action-disabled)]",
+      false: "bg-[var(--color-app-surface-input)] group-active:bg-[var(--color-app-surface-input-active)] group-disabled:bg-[var(--color-app-surface-default)]",
     },
     size: {
       sm: "gap-1 py-[6px] pl-[6px] pr-3",

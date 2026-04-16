@@ -29,8 +29,8 @@ export function RemoteImage({
 
   if (hasError) {
     return (
-      <View className={cn("items-center justify-center bg-neutral-200", className)}>
-        <Text className="px-6 text-center text-sm text-neutral-500 font-medium">{alt}</Text>
+      <View className={cn("items-center justify-center bg-[var(--color-app-surface-input)]", className)}>
+        <Text className="px-6 text-center text-sm text-[var(--color-app-text-secondary)] font-medium">{alt}</Text>
       </View>
     );
   }

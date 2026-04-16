@@ -17,7 +17,7 @@ export function PaidPostCover({ coverUrl, onDonatePress }: PaidPostCoverProps) {
         className="h-full w-full"
         blurRadius={40}
       />
-      <View className="absolute inset-0 bg-[rgba(16,16,22,0.52)]" />
+      <View className="absolute inset-0 bg-[var(--color-app-overlay-medium)]" />
       <View className="absolute inset-0 items-center justify-center gap-2 px-3">
         <View className="p-2.75 bg-[var(--color-app-brand-primary)] rounded-md">
 
