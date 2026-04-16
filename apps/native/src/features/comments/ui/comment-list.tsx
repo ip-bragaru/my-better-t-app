@@ -55,7 +55,7 @@ export function CommentList({
       ItemSeparatorComponent={CommentItemSeparator}
       ListEmptyComponent={<View className="px-5">{emptyState}</View>}
       ListFooterComponent={
-        <View className="px-5 pb-[140px] pt-4">
+        <View className="px-5">
           {footer}
         </View>
       }

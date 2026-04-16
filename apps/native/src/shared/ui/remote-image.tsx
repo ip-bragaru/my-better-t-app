@@ -7,6 +7,7 @@ import {
 } from "react-native";
 
 import { cn } from "@shared/lib/cn";
+import { SkeletonBlock } from "@shared/ui/skeleton-block";
 
 type RemoteImageProps = {
   uri: string;
@@ -23,13 +24,12 @@ export function RemoteImage({
   resizeMode = "cover",
   blurRadius,
 }: RemoteImageProps) {
+  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
   if (hasError) {
     return (
-      <View
-        className={cn("items-center justify-center bg-neutral-200", className)}
-      >
+      <View className={cn("items-center justify-center bg-neutral-200", className)}>
         <Text className="px-6 text-center text-sm text-neutral-500 font-medium">{alt}</Text>
       </View>
     );
@@ -37,11 +37,15 @@ export function RemoteImage({
 
   return (
     <View className={className}>
+      {isLoading && (
+        <SkeletonBlock className="absolute inset-0 rounded-none" />
+      )}
       <Image
         style={{ width: "100%", height: "100%" }}
         source={{ uri }}
         accessibilityLabel={alt}
-        onError={() => setHasError(true)}
+        onLoad={() => setIsLoading(false)}
+        onError={() => { setIsLoading(false); setHasError(true); }}
         resizeMode={resizeMode}
         blurRadius={blurRadius}
       />

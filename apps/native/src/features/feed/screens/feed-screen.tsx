@@ -18,6 +18,7 @@ import type { FeedFilter, Post } from "@shared/model/types";
 export const FeedScreen = observer(function FeedScreen() {
   const { token, isReady } = useSession();
   const [filter, setFilter] = useState<FeedFilter>("all");
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
 
   const feedQuery = useFeedQuery({
@@ -45,8 +46,13 @@ export const FeedScreen = observer(function FeedScreen() {
     feedQuery.fetchNextPage();
   }, [feedQuery]);
 
-  const handleRefresh = useCallback(() => {
-    feedQuery.refetch();
+  const handleRefresh = useCallback(async () => {
+    setIsManualRefreshing(true);
+    try {
+      await feedQuery.refetch();
+    } finally {
+      setIsManualRefreshing(false);
+    }
   }, [feedQuery]);
 
   const renderFeedPostItem = useCallback(
@@ -72,36 +78,47 @@ export const FeedScreen = observer(function FeedScreen() {
         updateCellsBatchingPeriod={48}
         windowSize={7}
         removeClippedSubviews
+        // Let iOS position the pull indicator below the status bar natively
+        contentInset={{ top: insets.top }}
+        contentOffset={{ x: 0, y: -insets.top }}
+        scrollIndicatorInsets={{ top: insets.top }}
         refreshControl={
           <RefreshControl
-            refreshing={feedQuery.isRefetching && !feedQuery.isFetchingNextPage}
+            refreshing={isManualRefreshing}
             onRefresh={handleRefresh}
+            progressViewOffset={insets.top}
             tintColor="#17131A"
           />
         }
         ListHeaderComponent={
-          <View className="px-4 pb-4" style={{ paddingTop: insets.top + 16 }}>
+          <View className="px-4 pb-4 pt-4">
             <FeedFilterTabs value={filter} onChange={setFilter} />
           </View>
         }
         ItemSeparatorComponent={FeedItemSeparator}
         renderItem={renderFeedPostItem}
         ListEmptyComponent={
-          <View className="flex-1 px-4 pt-10">
-            <ScreenState
-              isLoading={feedQuery.isLoading}
-              error={feedQuery.error}
-              isEmpty={posts.length === 0}
-              onRetry={handleRefresh}
-              emptyTitle="No posts in this tier"
-              emptyMessage="Try another filter or pull to refresh."
-            >
-              {null}
-            </ScreenState>
-          </View>
+          feedQuery.isLoading ? (
+            <View className="px-5 pt-4">
+              <FeedSkeleton />
+            </View>
+          ) : (
+            <View className="flex-1 px-4 pt-10">
+              <ScreenState
+                isLoading={false}
+                error={feedQuery.error}
+                isEmpty={posts.length === 0}
+                onRetry={handleRefresh}
+                emptyTitle="No posts in this tier"
+                emptyMessage="Try another filter or pull to refresh."
+              >
+                {null}
+              </ScreenState>
+            </View>
+          )
         }
         ListFooterComponent={
-          <View className="px-4 pt-4" style={{ paddingBottom: insets.bottom + 32 }}>
+          <View className="px-4" style={{ paddingBottom: insets.bottom }}>
             {posts.length > 0 ? (
               <PaginationFooter
                 isFetchingNextPage={feedQuery.isFetchingNextPage}
@@ -111,12 +128,6 @@ export const FeedScreen = observer(function FeedScreen() {
           </View>
         }
       />
-
-      {feedQuery.isLoading ? (
-        <View className="absolute inset-x-5 top-48">
-          <FeedSkeleton />
-        </View>
-      ) : null}
 
       {feedQuery.error && posts.length > 0 ? (
         <View className="absolute inset-x-5 bottom-6 rounded-3xl bg-[var(--color-app-surface-default)] p-4 shadow-sm">

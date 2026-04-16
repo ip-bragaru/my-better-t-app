@@ -14,15 +14,5 @@ export function PaginationFooter({ isFetchingNextPage, hasMore }: PaginationFoot
     );
   }
 
-  if (!hasMore) {
-    return (
-      <View className="items-center py-6">
-        <Text className="text-xs uppercase tracking-[1.8px] text-neutral-400 font-medium">
-          End of list
-        </Text>
-      </View>
-    );
-  }
-
   return <View className="h-4" />;
 }

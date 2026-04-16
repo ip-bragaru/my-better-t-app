@@ -1,6 +1,7 @@
 import "../global.css";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { HeroUINativeProvider } from "heroui-native";
 import { Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -40,7 +41,7 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView className="flex-1">
-
+      <StatusBar style="dark" animated />
       <AppThemeProvider>
         <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
           <AppProviders>
