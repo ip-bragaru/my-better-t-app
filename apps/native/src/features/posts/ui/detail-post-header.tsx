@@ -1,15 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
-
-import { useDesignTokens } from "@shared/config/design-tokens";
-import type { Post } from "@shared/model/types";
-
 import { PaidPostCover } from "@features/posts/ui/paid-post-cover";
 import { PostAuthorRow } from "@features/posts/ui/post-author-row";
 import { PostImage } from "@features/posts/ui/post-image";
 import { PostStatsRow } from "@features/posts/ui/post-stats-row";
 import { PostTextBlock } from "@features/posts/ui/post-text-block";
+import { useDesignTokens } from "@shared/config/design-tokens";
+import type { Post } from "@shared/model/types";
+import { useRouter } from "expo-router";
+import { Pressable, Text, View } from "react-native";
 
 type DetailPostHeaderProps = {
   post: Post;
@@ -51,7 +49,7 @@ export function DetailPostHeader({ post, likeSlot }: DetailPostHeaderProps) {
             <View className="-mx-[var(--component-layout-card-padding)]">
               <PostImage uri={post.coverUrl} alt={post.title} rounded="none" />
             </View>
-            <PostTextBlock title={post.title} text={post.preview} />
+            <PostTextBlock title={post.title} text={post.preview} collapsible />
           </>
         )}
 

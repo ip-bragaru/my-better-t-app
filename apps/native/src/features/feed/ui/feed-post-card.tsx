@@ -1,15 +1,13 @@
-import { memo } from "react";
-import { View } from "react-native";
-
-import type { Post } from "@shared/model/types";
-import { SkeletonBlock } from "@shared/ui/skeleton-block";
-
+import { PaidPostCover } from "@features/posts/ui/paid-post-cover";
 import { PostAuthorRow } from "@features/posts/ui/post-author-row";
 import { PostCard } from "@features/posts/ui/post-card";
-import { PaidPostCover } from "@features/posts/ui/paid-post-cover";
 import { PostImage } from "@features/posts/ui/post-image";
 import { PostStatsRow } from "@features/posts/ui/post-stats-row";
 import { PostTextBlock } from "@features/posts/ui/post-text-block";
+import type { Post } from "@shared/model/types";
+import { SkeletonBlock } from "@shared/ui/skeleton-block";
+import { memo } from "react";
+import { View } from "react-native";
 
 type FeedPostCardProps = {
   post: Post;
@@ -17,8 +15,6 @@ type FeedPostCardProps = {
 };
 
 function FeedPostCardComponent({ post, onPress }: FeedPostCardProps) {
-  const shouldShowMore = post.preview.length > 120;
-
   if (post.tier === "paid") {
     return (
       <PostCard>
@@ -45,13 +41,7 @@ function FeedPostCardComponent({ post, onPress }: FeedPostCardProps) {
       <View className="-mx-[var(--component-layout-card-padding)] mt-[var(--space-xs)]">
         <PostImage uri={post.coverUrl} alt={post.title} rounded="none" />
       </View>
-      <PostTextBlock
-        title={post.title}
-        text={post.preview}
-        maxLines={4}
-        actionLabel={shouldShowMore ? "Показать еще" : undefined}
-        onActionPress={shouldShowMore ? () => onPress(post) : undefined}
-      />
+      <PostTextBlock title={post.title} text={post.preview} collapsible />
       <PostStatsRow
         likesCount={post.likesCount}
         commentsCount={post.commentsCount}
