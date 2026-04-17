@@ -22,6 +22,14 @@
         "projectId": "da3b8c75-f5fc-4d0a-b6ee-4c2a6a8b5288"
       }
     },
-    "owner": "bragaru-i"
+    "owner": "bragaru-i",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/da3b8c75-f5fc-4d0a-b6ee-4c2a6a8b5288"
+    },
+    "android": {},
+    "ios": {}
   }
 }
