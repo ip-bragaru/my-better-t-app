@@ -24,8 +24,9 @@ export type CreateCommentResponseDto =
 export type CreateCommentResponseDataDto = NonNullable<CreateCommentResponseDto["data"]>;
 
 export type FeedQueryDto = NonNullable<paths["/posts"]["get"]["parameters"]["query"]>;
-export type CommentsQueryDto =
-  NonNullable<paths["/posts/{id}/comments"]["get"]["parameters"]["query"]>;
+export type CommentsQueryDto = NonNullable<
+  paths["/posts/{id}/comments"]["get"]["parameters"]["query"]
+>;
 
 export type ApiClientErrorCode =
   | "UNAUTHORIZED"
@@ -54,22 +55,14 @@ export type MecenateApiClient = ReturnType<typeof createMecenateApiClient>;
 
 export function createMecenateApiClient(baseUrl: string) {
   return {
-    getPosts: (params: {
-      token: string;
-      query: FeedQueryDto;
-      signal?: AbortSignal;
-    }) =>
+    getPosts: (params: { token: string; query: FeedQueryDto; signal?: AbortSignal }) =>
       requestJson<PostsResponseDataDto>(baseUrl, {
         path: "posts",
         token: params.token,
         query: params.query,
         signal: params.signal,
       }),
-    getPostDetail: (params: {
-      token: string;
-      postId: string;
-      signal?: AbortSignal;
-    }) =>
+    getPostDetail: (params: { token: string; postId: string; signal?: AbortSignal }) =>
       requestJson<PostDetailResponseDataDto>(baseUrl, {
         path: `posts/${params.postId}`,
         token: params.token,
@@ -112,14 +105,7 @@ export function createMecenateApiClient(baseUrl: string) {
 
 async function requestJson<TData>(
   baseUrl: string,
-  {
-    method = "GET",
-    path,
-    token,
-    query,
-    body,
-    signal,
-  }: RequestOptions,
+  { method = "GET", path, token, query, body, signal }: RequestOptions,
 ): Promise<TData> {
   const url = createUrl(baseUrl, path, query);
 
@@ -135,7 +121,11 @@ async function requestJson<TData>(
       body: body ? JSON.stringify(body) : undefined,
       signal,
     });
-  } catch {
+  } catch (error) {
+    if (isAbortError(error)) {
+      throw error;
+    }
+
     throw createApiClientError({
       code: "NETWORK_ERROR",
       message: "Network request failed. Check your connection and try again.",
@@ -185,11 +175,7 @@ async function requestJson<TData>(
   });
 }
 
-function createUrl(
-  baseUrl: string,
-  path: string,
-  query?: RequestOptions["query"],
-) {
+function createUrl(baseUrl: string, path: string, query?: RequestOptions["query"]) {
   const url = new URL(path, `${baseUrl}/`);
 
   if (query) {
@@ -227,8 +213,7 @@ function getErrorPayload(value: unknown) {
   }
 
   const code = typeof value.error.code === "string" ? value.error.code : null;
-  const message =
-    typeof value.error.message === "string" ? value.error.message : null;
+  const message = typeof value.error.message === "string" ? value.error.message : null;
 
   return {
     code,
@@ -236,9 +221,7 @@ function getErrorPayload(value: unknown) {
   };
 }
 
-function hasEnvelopeData<TData>(
-  value: unknown,
-): value is { ok?: boolean; data: TData } {
+function hasEnvelopeData<TData>(value: unknown): value is { ok?: boolean; data: TData } {
   return isRecord(value) && "data" in value;
 }
 
@@ -250,6 +233,10 @@ function hasEnvelopeError(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function isAbortError(error: unknown) {
+  return error instanceof Error && error.name === "AbortError";
 }
 
 function assertNonNullable<TValue>(

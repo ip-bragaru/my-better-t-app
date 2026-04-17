@@ -7,7 +7,8 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "generate": "openapi-typescript openapi/mecenate.openapi.json -o src/__generated__/mecenate-api.types.ts"
+    "generate": "openapi-typescript openapi/mecenate.openapi.json -o src/__generated__/mecenate-api.types.ts",
+    "check-types": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@my-better-t-app/config": "workspace:*",

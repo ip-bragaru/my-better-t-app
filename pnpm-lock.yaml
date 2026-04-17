@@ -181,6 +181,9 @@ importers:
       '@my-better-t-app/config':
         specifier: workspace:*
         version: link:../config
+      '@types/node':
+        specifier: ^24.10.0
+        version: 24.12.2
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

@@ -1,146 +1,151 @@
-# Mecenate Mobile — тестовое задание
+# Mecenate Mobile
 
-Мобильное приложение для платформы поддержки авторов (аналог Patreon / Boosty). Реализует экран ленты публикаций с пагинацией, pull-to-refresh, платными постами и real-time обновлениями через WebSocket.
+Тестовое мобильное приложение для Mecenate: экран ленты публикаций авторов с курсорной пагинацией, pull-to-refresh, обработкой закрытых постов и ошибочных состояний API.
 
-**Стек:** React Native + Expo · TypeScript · MobX + React Query · Expo Router · дизайн-токены
+Стек: React Native + Expo + TypeScript + Expo Router + React Query + MobX + дизайн-токены.
 
----
+## Что внутри
 
-## Быстрый старт
+- `FeedScreen` с карточками публикаций: аватар, имя автора, превью, обложка, лайки, комментарии
+- Курсорная пагинация на `useInfiniteQuery`
+- Защита от лишних `onEndReached` вызовов и дублирования элементов
+- Pull-to-refresh с reset-сценарием без смешивания старых и новых страниц
+- Закрытые `paid` посты без раскрытия превью
+- Error state с сообщением `Не удалось загрузить публикации` и рабочим retry
+- Совместимость с Expo Go, без `custom dev client` и без native changes
+
+## Запуск
 
 ```bash
-# 1. Установить зависимости
 pnpm install
-
-# 2. Скопировать env (необязательно — по умолчанию используется https://k8s.mectest.ru/test-app)
 cp apps/native/.env.example apps/native/.env
-
-# 3. Регенерировать типы из OpenAPI-схемы (если схема изменилась)
-pnpm --filter @my-better-t-app/mecenate-api run generate
-
-# 4. Запустить dev-сервер
 pnpm run dev:native
 ```
 
-Открыть в **Expo Go**: отсканировать QR-код из терминала или из Expo Dev Tools.
+После старта откройте приложение через Expo Go:
 
----
+1. Установите Expo Go на iOS или Android.
+2. Запустите `pnpm run dev:native`.
+3. Отсканируйте QR-код из терминала.
 
-## Переменные окружения
+## Env
+
+`.env.example` лежит в `apps/native/.env.example`.
 
 | Переменная | По умолчанию | Описание |
 | --- | --- | --- |
 | `EXPO_PUBLIC_MECENATE_API_URL` | `https://k8s.mectest.ru/test-app` | Базовый URL REST API и WebSocket |
-| `EXPO_PUBLIC_MECENATE_WS_DEBUG` | `false` | Включить подробный лог WebSocket в консоль |
+| `EXPO_PUBLIC_MECENATE_WS_DEBUG` | `false` | Подробный лог WebSocket |
 
-`.env.example` находится в `apps/native/.env.example`.
+## Команды
 
----
-
-## Доступные команды
-
-| Команда | Описание |
+| Команда | Что делает |
 | --- | --- |
-| `pnpm run dev:native` | Запустить токен-генератор и Expo dev-сервер |
-| `pnpm run dev` | Запустить все приложения монорепо |
-| `pnpm run build` | Собрать все пакеты |
-| `pnpm run check-types` | Проверить типы TypeScript во всём монорепо |
-| `pnpm run lint` | Запустить Biome lint |
-| `pnpm run lint:fix` | Применить автоматические исправления Biome |
-| `pnpm run format` | Форматировать код через Biome |
-| `pnpm --filter @my-better-t-app/mecenate-api run generate` | Сгенерировать TypeScript-типы из OpenAPI-схемы |
-
----
-
-## Что реализовано
-
-### Экран Feed
-
-- Список постов с аватаром автора, именем, обложкой, превью текста, счётчиком лайков и комментариев
-- Курсорная пагинация через `useInfiniteQuery` — подгрузка при скролле вниз
-- Защита от дублирования запросов: `isFetchingNextPage` + `isFetching` в `handleEndReached`
-- Pull-to-refresh с корректным reset через `refetch()` infinite-query
-- Фильтр по тиру: «Все» / «Бесплатные» / «Платные»
-- Loading skeleton пока данные загружаются первый раз
-- Empty state когда постов нет
-- Error state с кнопкой «Повторить» когда API недоступен
-- Плавающий toast-баннер если ошибка случилась при уже загруженных данных
-
-### Платные посты
-
-- На экране ленты: размытая обложка + иконка замка + skeleton-заглушки вместо текста
-- На экране детали: показывается `PaidPostCover` вместо обложки и тела поста; заголовок и статистика остаются доступны
-- Текст превью платного поста не раскрывается нигде в приложении
-
-### Экран деталей поста
-
-- Заголовок, обложка, превью / заглушка (для paid), статистика
-- Кнопка лайка с оптимистичным обновлением и rollback при ошибке
-- Секция комментариев с курсорной пагинацией
-- Pull-to-refresh обновляет и пост, и комментарии одновременно
-- Форма добавления комментария с ограничением 500 символов
-
-### Real-time
-
-- WebSocket-соединение с экспоненциальным backoff (1–10 секунд)
-- Обработка событий: `ping`, `like_updated`, `comment_added`
-- Дедупликация событий по id (TTL 45 секунд)
-- Синхронизация кешей React Query при получении событий
-
-### Error / Empty / Loading states
-
-- Все состояния вынесены в переиспользуемый `ScreenState` (ts-pattern match)
-- Тексты на русском языке
-
----
+| `pnpm run dev:native` | Генерирует токены и запускает Expo dev server |
+| `pnpm run dev` | Запускает монорепо через Turbo |
+| `pnpm run build` | Запускает сборку пакетов |
+| `pnpm run check-types` | Проверяет TypeScript в `native`, `env`, `mecenate-api` |
+| `pnpm run lint` | Запускает Biome lint |
+| `pnpm run lint:fix` | Применяет автопочинку Biome |
+| `pnpm run check:biome` | Полная проверка форматирования и стиля |
+| `pnpm --filter @my-better-t-app/mecenate-api run generate` | Перегенерирует типы из OpenAPI |
 
 ## Архитектура
 
 ```text
 apps/native/src/
   core/
-    providers/        # QueryClient, AppStore, SessionBootstrap, RealtimeConnection
-    stores/           # AppStore (MobX): session UUID, WebSocket status
+    providers/        # QueryClient, MobX store, session bootstrap, realtime
+    stores/           # app-level state
   features/
-    session/          # UUID bootstrap, SecureStore / localStorage
-    feed/             # FeedScreen, useFeedQuery, FeedPostCard, FeedSkeleton
-    post-detail/      # PostDetailScreen, usePostDetailQuery, useToggleLikeMutation
-    comments/         # CommentList, CommentItem, useCommentsQuery, useCreateCommentMutation
-    realtime/         # RealtimeConnection, query-cache-sync
+    feed/
+      api/            # transport layer для /posts
+      hooks/          # useFeedQuery + useFeedController
+      lib/            # dedupe/reset helpers для infinite query
+      screens/        # FeedScreen container
+      ui/             # FeedPostCard, FeedErrorState, FeedEmptyState, ...
+    post-detail/
+    comments/
+    session/
+    realtime/
   shared/
-    api/              # mecenateApi singleton, QueryClient config
-    config/           # design-tokens, app-config
-    lib/              # formatters, query-keys, error-mapper, invariant, uuid
-    model/            # domain types: Post, Author, Comment, CursorPage
-    ui/               # Button, Avatar, ActionChip, SkeletonBlock, ScreenState, ...
+    api/              # API client и QueryClient
+    config/           # app config, fonts, design tokens
+    lib/              # query keys, formatters, utils
+    model/            # domain types
+    ui/               # shared UI kit
 
 packages/
-  mecenate-api/       # OpenAPI-клиент + типы (openapi-typescript)
+  mecenate-api/       # OpenAPI schema + generated TS types
+  env/                # typed env access
 ```
 
-### Разделение состояния
+### Разделение ответственности
 
-- **React Query** — весь серверный стейт: лента, детали поста, лайки, комментарии
-- **MobX** — только app-level state: готовность сессионного UUID и статус WebSocket-соединения
-- Серверный стейт не дублируется в MobX
+- React Query хранит весь серверный state: feed, post detail, comments.
+- MobX оставлен только для app-level state: session token и состояние realtime-соединения.
+- `useFeedController` управляет пагинацией, refresh/reset сценарием и защитой от лишних вызовов.
+- Маппинг transport DTO -> domain types изолирован в `mappers/`.
+- Контракт API берётся из `packages/mecenate-api/openapi/mecenate.openapi.json`.
 
-### Сессия
+## Что реализовано по заданию
 
-- При первом запуске генерируется UUID (`uuid.ts`) и сохраняется в Expo SecureStore (iOS/Android) или localStorage (web)
-- Ключ хранилища: `mecenate.session.uuid`
-- UUID используется как Bearer token для REST и как query-параметр WebSocket
+### Feed
 
-### API-контракт
+- Лента публикаций с карточками авторов
+- Стабильные `keyExtractor` по `post.id`
+- Переиспользуемые feed-компоненты:
+  - `FeedPostCard`
+  - `FeedAuthorHeader`
+  - `FeedPostStats`
+  - `FeedPaidStub`
+  - `FeedErrorState`
+  - `FeedEmptyState`
 
-- Схема: `packages/mecenate-api/openapi/mecenate.openapi.json`
-- Типы генерируются командой: `pnpm --filter @my-better-t-app/mecenate-api run generate`
-- Маппинг transport → domain в `apps/native/src/features/*/mappers/`
+### Pagination
 
----
+- Cursor pagination через `useInfiniteQuery`
+- Подгрузка при скролле вниз
+- Передан `AbortSignal` до fetch layer, чтобы отмена запросов работала корректно
+- Защита от повторных `onEndReached` вызовов
+- Дедупликация постов между страницами
 
-## Известные ограничения
+### Pull-to-refresh
 
-- Аватары в формате `.webm` не рендерятся через `<Image>` в React Native — компонент `Avatar` отображает инициалы как фолбэк
-- WebSocket-события `like_updated` не содержат `isLiked` — синхронизируется только счётчик, локальное состояние лайка пользователя сохраняется
-- Лайки комментариев — только локальный UI-стейт (анимация + счётчик); API для лайков комментариев в схеме отсутствует
-- Комментарии добавляются в кеш после успешного POST, а не оптимистично — чтобы избежать дублирования с WebSocket-событием `comment_added`
+- Refresh отменяет активные feed-запросы
+- Infinite cache обрезается до первой страницы перед новым запросом
+- После refresh не смешиваются старые и новые страницы
+
+### Paid posts
+
+- Для `tier === "paid"` в ленте не показывается текст превью
+- Вместо текста отображается отдельная заглушка
+- Счётчики лайков и комментариев сохраняются
+
+### API error / retry
+
+- При пустом списке и ошибке показывается `Не удалось загрузить публикации`
+- Кнопка `Повторить` запускает загрузку заново
+- При уже загруженных карточках показывается неразрушающий retry-баннер
+
+## OpenAPI и типизация
+
+- Источник истины по контракту: `packages/mecenate-api/openapi/mecenate.openapi.json`
+- Типы генерируются в `packages/mecenate-api/src/__generated__/mecenate-api.types.ts`
+- Feed и comments используют cursor-based контракт API, offset pagination не используется
+
+## Проверка перед сдачей
+
+Минимальный набор:
+
+```bash
+pnpm run check-types
+pnpm run dev:native
+```
+
+Если менялся OpenAPI контракт:
+
+```bash
+pnpm --filter @my-better-t-app/mecenate-api run generate
+pnpm run check-types
+```

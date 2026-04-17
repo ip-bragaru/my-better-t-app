@@ -1,37 +1,32 @@
-import { observer } from "mobx-react-lite";
+import { useFeedController } from "@features/feed/hooks/use-feed-controller";
+import { FeedEmptyState } from "@features/feed/ui/feed-empty-state";
+import { FeedErrorState } from "@features/feed/ui/feed-error-state";
+import { FeedFilterTabs } from "@features/feed/ui/feed-filter-tabs";
+import { FeedPostCard } from "@features/feed/ui/feed-post-card";
+import { FeedSkeleton } from "@features/feed/ui/feed-skeleton";
+import { useSession } from "@features/session/hooks/use-session";
+import { useDesignTokens } from "@shared/config/design-tokens";
+import type { FeedFilter, Post } from "@shared/model/types";
+import { Button } from "@shared/ui/button";
+import { PaginationFooter } from "@shared/ui/pagination-footer";
+import { ScreenContainer } from "@shared/ui/screen-container";
+import { LoadingState } from "@shared/ui/screen-state";
 import { router } from "expo-router";
+import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useSession } from "@features/session/hooks/use-session";
-import { useDesignTokens } from "@shared/config/design-tokens";
-import { useFeedQuery } from "@features/feed/hooks/use-feed-query";
-import { FeedFilterTabs } from "@features/feed/ui/feed-filter-tabs";
-import { FeedPostCard } from "@features/feed/ui/feed-post-card";
-import { FeedSkeleton } from "@features/feed/ui/feed-skeleton";
-import { PaginationFooter } from "@shared/ui/pagination-footer";
-import { Button } from "@shared/ui/button";
-import { ScreenContainer } from "@shared/ui/screen-container";
-import { LoadingState, ScreenState } from "@shared/ui/screen-state";
-import type { FeedFilter, Post } from "@shared/model/types";
-
 export const FeedScreen = observer(function FeedScreen() {
   const { token, isReady } = useSession();
   const [filter, setFilter] = useState<FeedFilter>("all");
-  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
   const tokens = useDesignTokens();
 
-  const feedQuery = useFeedQuery({
+  const { feedQuery, posts, isManualRefreshing, refresh, handleEndReached } = useFeedController({
     token: token ?? "",
     filter,
   });
-
-  const posts = useMemo(
-    () => feedQuery.data?.pages.flatMap((page) => page.items) ?? [],
-    [feedQuery.data],
-  );
 
   const handleOpenPost = useCallback((post: Post) => {
     router.push({
@@ -44,31 +39,34 @@ export const FeedScreen = observer(function FeedScreen() {
     });
   }, []);
 
-  const { hasNextPage, isFetchingNextPage, isFetching, fetchNextPage, refetch } = feedQuery;
-
-  const handleEndReached = useCallback(() => {
-    if (!hasNextPage || isFetchingNextPage || isFetching) {
-      return;
-    }
-
-    fetchNextPage();
-  }, [hasNextPage, isFetchingNextPage, isFetching, fetchNextPage]);
-
-  const handleRefresh = useCallback(async () => {
-    setIsManualRefreshing(true);
-    try {
-      await refetch();
-    } finally {
-      setIsManualRefreshing(false);
-    }
-  }, [refetch]);
-
   const renderFeedPostItem = useCallback(
-    ({ item }: { item: Post }) => (
-      <FeedPostCard post={item} onPress={handleOpenPost} />
-    ),
+    ({ item }: { item: Post }) => <FeedPostCard post={item} onPress={handleOpenPost} />,
     [handleOpenPost],
   );
+
+  const listEmptyComponent = useMemo(() => {
+    if (feedQuery.isLoading) {
+      return (
+        <View className="px-[var(--component-layout-panel-padding)] pt-[var(--component-layout-card-padding)]">
+          <FeedSkeleton />
+        </View>
+      );
+    }
+
+    if (feedQuery.error) {
+      return (
+        <View className="flex-1 px-[var(--component-layout-card-padding)] pt-[var(--space-control)]">
+          <FeedErrorState onRetry={refresh} isRetrying={isManualRefreshing} />
+        </View>
+      );
+    }
+
+    return (
+      <View className="flex-1 px-[var(--component-layout-card-padding)] pt-[var(--space-control)]">
+        <FeedEmptyState />
+      </View>
+    );
+  }, [feedQuery.error, feedQuery.isLoading, isManualRefreshing, refresh]);
 
   if (!isReady) {
     return <LoadingState />;
@@ -93,7 +91,7 @@ export const FeedScreen = observer(function FeedScreen() {
         refreshControl={
           <RefreshControl
             refreshing={isManualRefreshing}
-            onRefresh={handleRefresh}
+            onRefresh={refresh}
             progressViewOffset={insets.top}
             tintColor={tokens.semantic.color.text.primary}
           />
@@ -105,26 +103,7 @@ export const FeedScreen = observer(function FeedScreen() {
         }
         ItemSeparatorComponent={FeedItemSeparator}
         renderItem={renderFeedPostItem}
-        ListEmptyComponent={
-          feedQuery.isLoading ? (
-            <View className="px-[var(--component-layout-panel-padding)] pt-[var(--component-layout-card-padding)]">
-              <FeedSkeleton />
-            </View>
-          ) : (
-            <View className="flex-1 px-[var(--component-layout-card-padding)] pt-[var(--space-control)]">
-              <ScreenState
-                isLoading={false}
-                error={feedQuery.error}
-                isEmpty={posts.length === 0}
-                onRetry={handleRefresh}
-                emptyTitle="Нет публикаций"
-                emptyMessage="Попробуйте другой фильтр или обновите ленту."
-              >
-                {null}
-              </ScreenState>
-            </View>
-          )
-        }
+        ListEmptyComponent={listEmptyComponent}
         ListFooterComponent={
           <SafeAreaView edges={["bottom"]} className="px-[var(--component-layout-card-padding)]">
             {posts.length > 0 ? (
@@ -140,10 +119,10 @@ export const FeedScreen = observer(function FeedScreen() {
       {feedQuery.error && posts.length > 0 ? (
         <View className="absolute inset-x-[var(--component-layout-floating-inset)] bottom-[var(--component-layout-floating-offset)] rounded-[var(--radius-xl)] border border-[var(--color-border-default)] bg-[var(--color-surface-default)] p-[var(--component-layout-card-padding)]">
           <Text className="text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)] text-[var(--color-text-secondary)] font-medium">
-            Не удалось обновить ленту. Кешированные карточки остаются доступны.
+            Не удалось загрузить публикации. Кешированные карточки остаются доступны.
           </Text>
           <View className="mt-[var(--space-sm)]">
-            <Button label="Повторить" variant="neutral" size="sm" onPress={handleRefresh} />
+            <Button label="Повторить" variant="neutral" size="sm" onPress={refresh} />
           </View>
         </View>
       ) : null}
