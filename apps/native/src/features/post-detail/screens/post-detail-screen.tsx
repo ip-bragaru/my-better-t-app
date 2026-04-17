@@ -1,18 +1,13 @@
-import { observer } from "mobx-react-lite";
-import { Link, Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
-import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
-
 import { useCommentsQuery } from "@features/comments/hooks/use-comments-query";
 import { useCreateCommentMutation } from "@features/comments/hooks/use-create-comment-mutation";
-import { CommentList } from "@features/comments/ui/comment-list";
 import { CommentComposer } from "@features/comments/ui/comment-composer";
+import { CommentList } from "@features/comments/ui/comment-list";
 import { CommentsSectionHeader } from "@features/comments/ui/comments-section-header";
-import { DetailPostHeader } from "@features/posts/ui/detail-post-header";
+import { usePostDetailQuery } from "@features/post-detail/hooks/use-post-detail-query";
 import { useToggleLikeMutation } from "@features/post-detail/hooks/use-toggle-like-mutation";
 import { PostDetailErrorState } from "@features/post-detail/ui/post-detail-error-state";
-import { usePostDetailQuery } from "@features/post-detail/hooks/use-post-detail-query";
 import { PostDetailSkeleton } from "@features/post-detail/ui/post-detail-skeleton";
+import { DetailPostHeader } from "@features/posts/ui/detail-post-header";
 import { useSession } from "@features/session/hooks/use-session";
 import { useDesignTokens } from "@shared/config/design-tokens";
 import { formatCompactCount } from "@shared/lib/formatters";
@@ -23,6 +18,10 @@ import { HeartOutlineIcon } from "@shared/ui/heart-outline-icon";
 import { PaginationFooter } from "@shared/ui/pagination-footer";
 import { ScreenContainer } from "@shared/ui/screen-container";
 import { EmptyState, ErrorState, LoadingState } from "@shared/ui/screen-state";
+import { Link, Stack, useLocalSearchParams } from "expo-router";
+import { observer } from "mobx-react-lite";
+import { useCallback, useMemo, useState } from "react";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 export const PostDetailScreen = observer(function PostDetailScreen() {
   const params = useLocalSearchParams<{
@@ -56,22 +55,19 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     postId,
   });
 
-  const comments = useMemo(
-    () => {
-      const items = commentsQuery.data?.pages.flatMap((page) => page.items) ?? [];
-      const seen = new Set<string>();
+  const comments = useMemo(() => {
+    const items = commentsQuery.data?.pages.flatMap((page) => page.items) ?? [];
+    const seen = new Set<string>();
 
-      return items.filter((comment) => {
-        if (seen.has(comment.id)) {
-          return false;
-        }
+    return items.filter((comment) => {
+      if (seen.has(comment.id)) {
+        return false;
+      }
 
-        seen.add(comment.id);
-        return true;
-      });
-    },
-    [commentsQuery.data],
-  );
+      seen.add(comment.id);
+      return true;
+    });
+  }, [commentsQuery.data]);
 
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
 
@@ -90,9 +86,12 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     commentsFetchNextPage();
   }, [commentsHasNextPage, commentsIsFetchingNextPage, commentsFetchNextPage]);
 
-  const handleSubmitComment = useCallback(async (value: string) => {
-    await createCommentMutation.mutateAsync(value);
-  }, [createCommentMutation]);
+  const handleSubmitComment = useCallback(
+    async (value: string) => {
+      await createCommentMutation.mutateAsync(value);
+    },
+    [createCommentMutation],
+  );
 
   const handleRefresh = useCallback(async () => {
     setIsManualRefreshing(true);
@@ -160,7 +159,7 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     return (
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.select({ ios: "padding", android: undefined })}
+        behavior={Platform.select({ ios: "padding", android: "height" })}
       >
         <CommentList
           comments={comments}
@@ -177,13 +176,9 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
                   label={formatCompactCount(post.likesCount)}
                   icon={
                     post.isLiked ? (
-                      <HeartFilledIcon
-                        color={tokens.semantic.color.feedback.like.surface}
-                      />
+                      <HeartFilledIcon color={tokens.semantic.color.feedback.like.surface} />
                     ) : (
-                      <HeartOutlineIcon
-                        color={tokens.semantic.color.text.stat}
-                      />
+                      <HeartOutlineIcon color={tokens.semantic.color.text.stat} />
                     )
                   }
                   onPress={() => likeMutation.mutate()}
@@ -205,9 +200,7 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
               />
             )
           }
-          footer={
-            renderFooter()
-          }
+          footer={renderFooter()}
         />
         <CommentComposer
           isSubmitting={createCommentMutation.isPending}

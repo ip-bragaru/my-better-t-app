@@ -1,10 +1,9 @@
-import { FlatList, RefreshControl, View, type ListRenderItemInfo } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-
 import { CommentItem } from "@features/comments/ui/comment-item";
 import { useDesignTokens } from "@shared/config/design-tokens";
 import { cn } from "@shared/lib/cn";
 import type { Comment } from "@shared/model/types";
+import { FlatList, type ListRenderItemInfo, RefreshControl, View } from "react-native";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 type CommentListProps = {
   comments: Comment[];
@@ -32,6 +31,7 @@ export function CommentList({
 
   return (
     <FlatList
+      className="flex-1"
       data={comments}
       keyExtractor={keyExtractor}
       renderItem={renderCommentItem}
