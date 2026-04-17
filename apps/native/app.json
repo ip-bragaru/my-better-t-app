@@ -7,7 +7,7 @@
       "bundler": "metro"
     },
     "name": "my-better-t-app",
-    "slug": "my-better-t-app",
+    "slug": "patreon-like",
     "plugins": [
       "expo-font",
       "expo-router",
@@ -15,6 +15,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "da3b8c75-f5fc-4d0a-b6ee-4c2a6a8b5288"
+      }
+    },
+    "owner": "bragaru-i"
   }
 }
