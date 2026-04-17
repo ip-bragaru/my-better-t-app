@@ -44,22 +44,24 @@ export const FeedScreen = observer(function FeedScreen() {
     });
   }, []);
 
+  const { hasNextPage, isFetchingNextPage, isFetching, fetchNextPage, refetch } = feedQuery;
+
   const handleEndReached = useCallback(() => {
-    if (!feedQuery.hasNextPage || feedQuery.isFetchingNextPage) {
+    if (!hasNextPage || isFetchingNextPage || isFetching) {
       return;
     }
 
-    feedQuery.fetchNextPage();
-  }, [feedQuery]);
+    fetchNextPage();
+  }, [hasNextPage, isFetchingNextPage, isFetching, fetchNextPage]);
 
   const handleRefresh = useCallback(async () => {
     setIsManualRefreshing(true);
     try {
-      await feedQuery.refetch();
+      await refetch();
     } finally {
       setIsManualRefreshing(false);
     }
-  }, [feedQuery]);
+  }, [refetch]);
 
   const renderFeedPostItem = useCallback(
     ({ item }: { item: Post }) => (
@@ -69,7 +71,7 @@ export const FeedScreen = observer(function FeedScreen() {
   );
 
   if (!isReady) {
-    return <LoadingState message="Preparing your session..." />;
+    return <LoadingState />;
   }
 
   return (
@@ -115,8 +117,8 @@ export const FeedScreen = observer(function FeedScreen() {
                 error={feedQuery.error}
                 isEmpty={posts.length === 0}
                 onRetry={handleRefresh}
-                emptyTitle="No posts in this tier"
-                emptyMessage="Try another filter or pull to refresh."
+                emptyTitle="Нет публикаций"
+                emptyMessage="Попробуйте другой фильтр или обновите ленту."
               >
                 {null}
               </ScreenState>

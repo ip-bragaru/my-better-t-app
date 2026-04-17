@@ -34,7 +34,7 @@ export function ScreenState(props: ScreenStateProps) {
     .otherwise(({ children }) => <>{children}</>);
 }
 
-export function LoadingState({ message }: { message: string }) {
+export function LoadingState({ message = "Загрузка..." }: { message?: string }) {
   const tokens = useDesignTokens();
 
   return (
@@ -78,13 +78,13 @@ export function ErrorState({
   return (
     <View className="flex-1 items-center justify-center px-[var(--space-xxxl)]">
       <Text className="text-center text-[length:var(--typography-lg-font-size)] leading-[var(--typography-lg-line-height)] text-[var(--color-text-primary)] font-semibold">
-        Unable to load
+        Не удалось загрузить
       </Text>
       <Text className="mt-[var(--space-sm)] text-center text-[length:var(--typography-sm-font-size)] leading-6 text-[var(--color-text-secondary)] font-medium">
         {mappedError.message}
       </Text>
       {onRetry ? (
-        <Button className="mt-[var(--space-lg)]" label="Try again" size="sm" onPress={onRetry} />
+        <Button className="mt-[var(--space-lg)]" label="Повторить" size="sm" onPress={onRetry} />
       ) : null}
     </View>
   );

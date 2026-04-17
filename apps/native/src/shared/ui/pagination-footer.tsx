@@ -22,7 +22,7 @@ export function PaginationFooter({ isFetchingNextPage, hasMore }: PaginationFoot
     return (
       <View className="items-center py-[var(--space-lg)]">
         <Text className="text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)] text-[var(--color-text-secondary)] font-medium">
-          Scroll for more
+          Прокрутите вниз
         </Text>
       </View>
     );

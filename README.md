@@ -1,134 +1,146 @@
-# my-better-t-app
+# Mecenate Mobile — тестовое задание
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React Native, Expo, and more.
+Мобильное приложение для платформы поддержки авторов (аналог Patreon / Boosty). Реализует экран ленты публикаций с пагинацией, pull-to-refresh, платными постами и real-time обновлениями через WebSocket.
 
-## Features
+**Стек:** React Native + Expo · TypeScript · MobX + React Query · Expo Router · дизайн-токены
 
-- **TypeScript** - For type safety and improved developer experience
-- **React Native** - Build mobile apps using React
-- **Expo** - Tools for React Native development
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Turborepo** - Optimized monorepo build system
+---
 
-## Getting Started
-
-First, install the dependencies:
+## Быстрый старт
 
 ```bash
+# 1. Установить зависимости
 pnpm install
-```
 
-Then, run the development server:
-
-```bash
-pnpm run dev
-```
-
-Use the Expo Go app to run the mobile application.
-
-## Project Structure
-
-```
-my-better-t-app/
-├── apps/
-│   ├── native/      # Mobile application (React Native, Expo)
-```
-
-## Available Scripts
-
-- `pnpm run dev`: Start all applications in development mode
-- `pnpm run build`: Build all applications
-- `pnpm run check-types`: Check TypeScript types across all apps
-- `pnpm run dev:native`: Start the React Native/Expo development server
-- `pnpm run lint`: Run Biome linting across the workspace
-- `pnpm run lint:fix`: Apply Biome lint fixes when safe
-- `pnpm run format`: Format the workspace with Biome
-- `pnpm run check:biome`: Run Biome checks across the workspace
-
-## Mecenate Mobile Assignment
-
-The Mecenate implementation lives in `apps/native` and is built as a feature-oriented Expo app on top of the existing monorepo.
-
-### Run
-
-```bash
-pnpm install
+# 2. Скопировать env (необязательно — по умолчанию используется https://k8s.mectest.ru/test-app)
 cp apps/native/.env.example apps/native/.env
+
+# 3. Регенерировать типы из OpenAPI-схемы (если схема изменилась)
 pnpm --filter @my-better-t-app/mecenate-api run generate
+
+# 4. Запустить dev-сервер
 pnpm run dev:native
 ```
 
-The backend base URL defaults to `https://k8s.mectest.ru/test-app`, so the env file is optional unless you want to override it.
+Открыть в **Expo Go**: отсканировать QR-код из терминала или из Expo Dev Tools.
 
-### Where auth UUID is created and stored
+---
 
-- Session bootstrap happens in `apps/native/src/features/session/model/session-bootstrap.tsx`
-- UUID generation is handled in `apps/native/src/shared/lib/uuid.ts`
-- The token is persisted with Expo SecureStore in `apps/native/src/features/session/model/session-storage.ts`
-- Storage key: `mecenate.session.uuid`
+## Переменные окружения
 
-Each app install generates and reuses its own UUID bearer token, which is then used for both REST requests and the WebSocket query param.
+| Переменная | По умолчанию | Описание |
+| --- | --- | --- |
+| `EXPO_PUBLIC_MECENATE_API_URL` | `https://k8s.mectest.ru/test-app` | Базовый URL REST API и WebSocket |
+| `EXPO_PUBLIC_MECENATE_WS_DEBUG` | `false` | Включить подробный лог WebSocket в консоль |
 
-### How WebSocket sync works
+`.env.example` находится в `apps/native/.env.example`.
 
-- Connection bootstrap lives in `apps/native/src/features/realtime/model/realtime-connection.tsx`
-- The client connects to `<apiBaseUrl>/ws?token=<uuid>`
-- It handles `ping`, `like_updated`, and `comment_added`
-- Reconnects use exponential backoff between `1s` and `10s`
-- Duplicate events are ignored with a short in-memory TTL map
-- React Query caches are reconciled through shared helpers in `apps/native/src/features/realtime/lib/query-cache-sync.ts`
+---
 
-Comments are inserted immediately after a successful mutation, and later duplicate socket events are ignored by comment id. Likes are updated optimistically, then reconciled with the mutation response and delayed socket updates.
+## Доступные команды
 
-### Architecture decisions
+| Команда | Описание |
+| --- | --- |
+| `pnpm run dev:native` | Запустить токен-генератор и Expo dev-сервер |
+| `pnpm run dev` | Запустить все приложения монорепо |
+| `pnpm run build` | Собрать все пакеты |
+| `pnpm run check-types` | Проверить типы TypeScript во всём монорепо |
+| `pnpm run lint` | Запустить Biome lint |
+| `pnpm run lint:fix` | Применить автоматические исправления Biome |
+| `pnpm run format` | Форматировать код через Biome |
+| `pnpm --filter @my-better-t-app/mecenate-api run generate` | Сгенерировать TypeScript-типы из OpenAPI-схемы |
 
-Implemented folder structure:
+---
+
+## Что реализовано
+
+### Экран Feed
+
+- Список постов с аватаром автора, именем, обложкой, превью текста, счётчиком лайков и комментариев
+- Курсорная пагинация через `useInfiniteQuery` — подгрузка при скролле вниз
+- Защита от дублирования запросов: `isFetchingNextPage` + `isFetching` в `handleEndReached`
+- Pull-to-refresh с корректным reset через `refetch()` infinite-query
+- Фильтр по тиру: «Все» / «Бесплатные» / «Платные»
+- Loading skeleton пока данные загружаются первый раз
+- Empty state когда постов нет
+- Error state с кнопкой «Повторить» когда API недоступен
+- Плавающий toast-баннер если ошибка случилась при уже загруженных данных
+
+### Платные посты
+
+- На экране ленты: размытая обложка + иконка замка + skeleton-заглушки вместо текста
+- На экране детали: показывается `PaidPostCover` вместо обложки и тела поста; заголовок и статистика остаются доступны
+- Текст превью платного поста не раскрывается нигде в приложении
+
+### Экран деталей поста
+
+- Заголовок, обложка, превью / заглушка (для paid), статистика
+- Кнопка лайка с оптимистичным обновлением и rollback при ошибке
+- Секция комментариев с курсорной пагинацией
+- Pull-to-refresh обновляет и пост, и комментарии одновременно
+- Форма добавления комментария с ограничением 500 символов
+
+### Real-time
+
+- WebSocket-соединение с экспоненциальным backoff (1–10 секунд)
+- Обработка событий: `ping`, `like_updated`, `comment_added`
+- Дедупликация событий по id (TTL 45 секунд)
+- Синхронизация кешей React Query при получении событий
+
+### Error / Empty / Loading states
+
+- Все состояния вынесены в переиспользуемый `ScreenState` (ts-pattern match)
+- Тексты на русском языке
+
+---
+
+## Архитектура
 
 ```text
 apps/native/src/
   core/
-    providers/
-    stores/
+    providers/        # QueryClient, AppStore, SessionBootstrap, RealtimeConnection
+    stores/           # AppStore (MobX): session UUID, WebSocket status
   features/
-    session/
-    feed/
-    post-detail/
-    comments/
-    realtime/
+    session/          # UUID bootstrap, SecureStore / localStorage
+    feed/             # FeedScreen, useFeedQuery, FeedPostCard, FeedSkeleton
+    post-detail/      # PostDetailScreen, usePostDetailQuery, useToggleLikeMutation
+    comments/         # CommentList, CommentItem, useCommentsQuery, useCreateCommentMutation
+    realtime/         # RealtimeConnection, query-cache-sync
   shared/
-    api/
-    config/
-    lib/
-    model/
-    ui/
+    api/              # mecenateApi singleton, QueryClient config
+    config/           # design-tokens, app-config
+    lib/              # formatters, query-keys, error-mapper, invariant, uuid
+    model/            # domain types: Post, Author, Comment, CursorPage
+    ui/               # Button, Avatar, ActionChip, SkeletonBlock, ScreenState, ...
+
+packages/
+  mecenate-api/       # OpenAPI-клиент + типы (openapi-typescript)
 ```
 
-Pragmatic decisions:
+### Разделение состояния
 
-- React Query owns all server state: feed, post detail, likes, comments
-- MobX is limited to app/session concerns: UUID readiness and WebSocket connection status
-- OpenAPI transport concerns live in the workspace package `packages/mecenate-api`
-- Schema is vendored at `packages/mecenate-api/openapi/mecenate.openapi.json`
-- Transport types are generated into `packages/mecenate-api/src/__generated__/mecenate-api.types.ts`
-- Runtime requests are centralized in the package, while the app keeps explicit mappers from transport DTOs into domain models
-- Expo Router remains the navigation layer, with feature screens mounted from route files
-- Design tokens and shared UI primitives keep styling consistent without introducing a heavyweight design system
-- Native imports use scoped aliases: `@core/*`, `@features/*`, `@shared/*`, `@components/*`, `@contexts/*`
+- **React Query** — весь серверный стейт: лента, детали поста, лайки, комментарии
+- **MobX** — только app-level state: готовность сессионного UUID и статус WebSocket-соединения
+- Серверный стейт не дублируется в MobX
 
-### API contract workflow
+### Сессия
 
-- Source schema: `packages/mecenate-api/openapi/mecenate.openapi.json`
-- Generator: `openapi-typescript`
-- Regenerate command:
+- При первом запуске генерируется UUID (`uuid.ts`) и сохраняется в Expo SecureStore (iOS/Android) или localStorage (web)
+- Ключ хранилища: `mecenate.session.uuid`
+- UUID используется как Bearer token для REST и как query-параметр WebSocket
 
-```bash
-pnpm --filter @my-better-t-app/mecenate-api run generate
-```
+### API-контракт
 
-This keeps the backend contract versioned in the repo while preserving a small transport package and a clean app-level domain layer.
+- Схема: `packages/mecenate-api/openapi/mecenate.openapi.json`
+- Типы генерируются командой: `pnpm --filter @my-better-t-app/mecenate-api run generate`
+- Маппинг transport → domain в `apps/native/src/features/*/mappers/`
 
-### Tradeoffs
+---
 
-- The API docs mention avatar URLs that may be `.webm`; React Native `Image` cannot render those reliably, so the app falls back to initials avatars in that case
-- WebSocket event payloads do not include `isLiked`, only `likesCount`, so realtime reconciliation preserves local like state while syncing counts
-- Comments are inserted on successful POST rather than with a fake optimistic placeholder to avoid duplicate/fake ids against the realtime stream
+## Известные ограничения
+
+- Аватары в формате `.webm` не рендерятся через `<Image>` в React Native — компонент `Avatar` отображает инициалы как фолбэк
+- WebSocket-события `like_updated` не содержат `isLiked` — синхронизируется только счётчик, локальное состояние лайка пользователя сохраняется
+- Лайки комментариев — только локальный UI-стейт (анимация + счётчик); API для лайков комментариев в схеме отсутствует
+- Комментарии добавляются в кеш после успешного POST, а не оптимистично — чтобы избежать дублирования с WebSocket-событием `comment_added`

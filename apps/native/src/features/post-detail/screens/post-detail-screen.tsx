@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link, Stack, useLocalSearchParams } from "expo-router";
+import { useCallback, useMemo, useState } from "react";
 import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 import { useCommentsQuery } from "@features/comments/hooks/use-comments-query";
@@ -75,14 +75,6 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
 
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
 
-  const router = useRouter();
-
-  useEffect(() => {
-    if (postQuery.data?.tier === "paid") {
-      router.replace("/");
-    }
-  }, [postQuery.data, router]);
-
   const {
     hasNextPage: commentsHasNextPage,
     isFetchingNextPage: commentsIsFetchingNextPage,
@@ -122,24 +114,24 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     }
 
     return undefined;
-  }, [comments.length, commentsQuery.hasNextPage]);
+  }, [comments.length, commentsQuery.hasNextPage, commentsQuery.isFetchingNextPage]);
 
   const renderContent = () => {
     if (!isReady) {
-      return <LoadingState message="Preparing your session..." />;
+      return <LoadingState />;
     }
 
     if (!postId) {
       return (
         <ScreenContainer className="items-center justify-center px-[var(--space-xxxl)]">
           <Text className="text-center text-[length:var(--typography-lg-font-size)] leading-[var(--typography-lg-line-height)] text-[var(--color-text-primary)] font-semibold">
-            Invalid post link
+            Неверная ссылка на пост
           </Text>
           <Text className="mt-[var(--space-sm)] text-center text-[length:var(--typography-sm-font-size)] leading-6 text-[var(--color-text-secondary)] font-medium">
-            This detail route is missing a valid post identifier.
+            Идентификатор публикации отсутствует.
           </Text>
           <Link href="../" asChild>
-            <Button className="mt-[var(--space-lg)]" label="Back to feed" size="sm" />
+            <Button className="mt-[var(--space-lg)]" label="В ленту" size="sm" />
           </Link>
         </ScreenContainer>
       );

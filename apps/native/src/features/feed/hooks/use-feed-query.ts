@@ -1,7 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { fetchPosts } from "@features/feed/api/feed-api";
-import { APP_CONFIG } from "@shared/config/app-config";
 import { queryKeys } from "@shared/lib/query-keys";
 import type { FeedFilter } from "@shared/model/types";
 
@@ -17,6 +16,6 @@ export function useFeedQuery(params: { token: string; filter: FeedFilter }) {
         cursor: pageParam ?? undefined,
       }),
     getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextCursor : undefined),
-    staleTime: APP_CONFIG.feedPageSize * 1_000,
+    staleTime: 30_000,
   });
 }
