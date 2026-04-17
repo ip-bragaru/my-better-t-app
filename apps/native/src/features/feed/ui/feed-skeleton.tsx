@@ -5,14 +5,14 @@ import { SurfaceCard } from "@shared/ui/surface-card";
 
 export function FeedSkeleton() {
   return (
-    <View className="gap-4">
+    <View className="gap-[var(--component-layout-card-padding)]">
       {Array.from({ length: 3 }, (_, index) => (
         <SurfaceCard key={index} className="overflow-hidden">
           <SkeletonBlock className="h-[200px] w-full" />
-          <View className="gap-4 p-5">
-            <View className="flex-row items-center gap-3">
+          <View className="gap-[var(--component-layout-card-padding)] p-[var(--component-layout-panel-padding)]">
+            <View className="flex-row items-center gap-[var(--space-sm)]">
               <SkeletonBlock className="h-11 w-11 rounded-full" />
-              <View className="flex-1 gap-2">
+              <View className="flex-1 gap-[var(--space-xs)]">
                 <SkeletonBlock className="h-3 w-40" />
                 <SkeletonBlock className="h-[10px] w-[100px]" />
               </View>

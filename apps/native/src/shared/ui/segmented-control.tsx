@@ -8,10 +8,39 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
 import { cn } from "@shared/lib/cn";
+import { mergeRecipeSlots, type RecipeClassNames, tv } from "@shared/ui/recipe";
 
 const AnimatedText = Animated.createAnimatedComponent(Text);
+const segmentedControlRecipe = tv({
+  slots: {
+    root: "flex-row rounded-full border border-[var(--color-border-default)] bg-[var(--color-surface-default)]",
+    pill: "pointer-events-none absolute inset-y-0 left-0 rounded-full",
+    item: "flex-1 rounded-full p-[var(--component-segmented-control-item-padding)]",
+    label:
+      "text-center text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)] lining-nums tabular-nums",
+  },
+  variants: {
+    disabled: {
+      true: {
+        root: "pointer-events-none opacity-[var(--opacity-disabled)]",
+      },
+    },
+    active: {
+      true: {
+        label: "font-bold",
+      },
+      false: {
+        label: "font-medium",
+      },
+    },
+  },
+  defaultVariants: {
+    disabled: false,
+    active: false,
+  },
+});
 
 export type SegmentedControlOption<TValue extends string> = {
   label: string;
@@ -23,6 +52,8 @@ type SegmentedControlProps<TValue extends string> = {
   options: Array<SegmentedControlOption<TValue>>;
   onChange: (value: TValue) => void;
   disabled?: boolean;
+  classNames?: RecipeClassNames<"root" | "pill" | "item" | "label">;
+  className?: string;
 };
 
 export function SegmentedControl<TValue extends string>({
@@ -30,13 +61,17 @@ export function SegmentedControl<TValue extends string>({
   options,
   onChange,
   disabled = false,
+  className,
+  classNames,
 }: SegmentedControlProps<TValue>) {
+  const tokens = useDesignTokens();
   const [containerWidth, setContainerWidth] = useState(0);
   const activeIndex = useMemo(
     () => Math.max(options.findIndex((option) => option.value === value), 0),
     [options, value],
   );
   const translateX = useSharedValue(0);
+  const rootSlots = mergeRecipeSlots(segmentedControlRecipe({ disabled }), classNames);
 
   const tabWidth = containerWidth > 0 ? containerWidth / options.length : 0;
 
@@ -58,7 +93,7 @@ export function SegmentedControl<TValue extends string>({
     backgroundColor: interpolateColor(
       pillPressProgress.value,
       [0, 1],
-      [DESIGN_TOKENS.color.brand.primary, DESIGN_TOKENS.color.brand.pressed],
+      [tokens.semantic.color.brand.primary, tokens.semantic.color.brand.pressed],
     ),
   }));
 
@@ -69,18 +104,18 @@ export function SegmentedControl<TValue extends string>({
   return (
     <View
       onLayout={handleLayout}
-      className="flex-row rounded-full border border-[var(--color-app-border-default)] bg-[var(--color-app-surface-default)]"
-      style={disabled ? { opacity: 0.45, pointerEvents: "none" } : { pointerEvents: "auto" }}
+      className={cn(rootSlots.root, className)}
     >
       {tabWidth ? (
         <Animated.View
-          className="absolute inset-0 rounded-full"
-          style={[{ width: tabWidth, pointerEvents: "none" }, activePillStyle]}
+          className={rootSlots.pill}
+          style={[{ width: tabWidth }, activePillStyle]}
         />
       ) : null}
       {options.map((option) => (
         <SegmentedControlItem
           key={option.value}
+          classNames={classNames}
           isActive={option.value === value}
           label={option.label}
           onPress={() => onChange(option.value)}
@@ -106,6 +141,7 @@ type SegmentedControlItemProps = {
   onPress: () => void;
   onPressIn?: () => void;
   onPressOut?: () => void;
+  classNames?: RecipeClassNames<"root" | "pill" | "item" | "label">;
 };
 
 export function SegmentedControlItem({
@@ -114,8 +150,11 @@ export function SegmentedControlItem({
   onPress,
   onPressIn,
   onPressOut,
+  classNames,
 }: SegmentedControlItemProps) {
+  const tokens = useDesignTokens();
   const progress = useSharedValue(isActive ? 1 : 0);
+  const slots = mergeRecipeSlots(segmentedControlRecipe({ active: isActive }), classNames);
 
   useEffect(() => {
     progress.value = withTiming(isActive ? 1 : 0, {
@@ -128,29 +167,19 @@ export function SegmentedControlItem({
     color: interpolateColor(
       progress.value,
       [0, 1],
-      [DESIGN_TOKENS.color.text.secondary, DESIGN_TOKENS.color.text.inverse],
+      [tokens.semantic.color.text.secondary, tokens.semantic.color.text.inverse],
     ),
     transform: [{ scale: 0.98 + progress.value * 0.02 }],
   }));
 
   return (
     <Pressable
-      className={cn("flex-1 rounded-full p-2.5")}
+      className={slots.item}
       onPress={onPress}
       onPressIn={onPressIn}
       onPressOut={onPressOut}
     >
-      <AnimatedText
-        className={cn("text-center", isActive ? "font-bold" : "font-medium")}
-        style={[
-          {
-            fontSize: 13,
-            lineHeight: 18,
-            fontVariant: ["lining-nums", "tabular-nums"],
-          },
-          labelStyle,
-        ]}
-      >
+      <AnimatedText className={slots.label} style={labelStyle}>
         {label}
       </AnimatedText>
     </Pressable>

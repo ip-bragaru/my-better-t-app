@@ -1,31 +1,40 @@
 import { Pressable, Text, View, type PressableProps } from "react-native";
-import { tv } from "tailwind-variants";
+import { cn } from "@shared/lib/cn";
 
-const chipContainer = tv({
-  base: "flex-row items-center rounded-full",
-  variants: {
-    active: {
-      true: "bg-[var(--color-app-action-default)] group-hover:bg-[var(--color-app-action-hover)] group-active:bg-[var(--color-app-action-active)] group-disabled:bg-[var(--color-app-action-disabled)]",
-      false: "bg-[var(--color-app-surface-input)] group-active:bg-[var(--color-app-surface-input-active)] group-disabled:bg-[var(--color-app-surface-default)]",
-    },
-    size: {
-      sm: "gap-1 py-[6px] pl-[6px] pr-3",
-      md: "gap-2 px-4 py-3",
-    },
+import { mergeRecipeSlots, type RecipeClassNames, tv } from "@shared/ui/recipe";
+
+const actionChipRecipe = tv({
+  slots: {
+    root: "",
+    content: "flex-row items-center rounded-full",
+    label: "font-bold lining-nums tabular-nums stacked-fractions",
   },
-  defaultVariants: { active: false, size: "md" },
-});
-
-const chipLabel = tv({
-  base: "font-semibold",
   variants: {
     active: {
-      true: "text-white",
-      false: "text-[var(--color-app-text-primary)]",
+      true: {
+        content:
+          "bg-[var(--color-action-default)] group-hover:bg-[var(--color-action-hover)] group-active:bg-[var(--color-action-active)] group-disabled:bg-[var(--color-action-disabled)]",
+        label: "text-[var(--color-text-inverse)]",
+      },
+      false: {
+        content:
+          "bg-[var(--color-surface-input)] group-active:bg-[var(--color-surface-input-active)] group-disabled:bg-[var(--color-surface-default)]",
+        label: "text-[var(--color-text-stat)]",
+      },
     },
     size: {
-      sm: "text-[13px]",
-      md: "text-sm",
+      sm: {
+        content:
+          "gap-[var(--component-chip-size-sm-gap)] py-[var(--component-chip-size-sm-padding-y)] pl-[var(--component-chip-size-sm-padding-x-leading)] pr-[var(--component-chip-size-sm-padding-x-trailing)]",
+        label:
+          "text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)]",
+      },
+      md: {
+        content:
+          "gap-[var(--component-chip-size-md-gap)] px-[var(--component-chip-size-md-padding-x)] py-[var(--component-chip-size-md-padding-y)]",
+        label:
+          "text-[length:var(--typography-md-font-size)] leading-[var(--typography-md-line-height)]",
+      },
     },
   },
   defaultVariants: { active: false, size: "md" },
@@ -36,6 +45,7 @@ type ActionChipProps = Omit<PressableProps, "style"> & {
   icon?: React.ReactNode;
   active?: boolean;
   size?: "sm" | "md";
+  classNames?: RecipeClassNames<"root" | "content" | "label">;
 };
 
 export function ActionChip({
@@ -43,19 +53,22 @@ export function ActionChip({
   icon,
   active = false,
   size = "md",
+  className,
+  classNames,
   ...props
 }: ActionChipProps) {
   const Container = props.onPress ? Pressable : View;
+  const slots = mergeRecipeSlots(actionChipRecipe({ active, size }), classNames);
 
   return (
     <Container
       {...props}
       accessibilityRole={props.onPress ? "button" : undefined}
-      className={props.onPress ? "group disabled:opacity-45" : undefined}
+      className={cn(props.onPress && "group disabled:opacity-[var(--opacity-disabled)]", slots.root, className)}
     >
-      <View className={chipContainer({ active, size })}>
+      <View className={slots.content}>
         {icon}
-        <Text className={chipLabel({ active, size })}>{label}</Text>
+        <Text className={slots.label}>{label}</Text>
       </View>
     </Container>
   );

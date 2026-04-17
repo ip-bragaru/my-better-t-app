@@ -11,17 +11,19 @@ export function Section({ title, subtitle, children, className, ...props }: Sect
   return (
     <View
       {...props}
-      className={cn("gap-[14px]", className)}
+      className={cn("gap-[var(--component-layout-content-gap)]", className)}
     >
       {title || subtitle ? (
-        <View className="gap-2">
+        <View className="gap-[var(--space-xs)]">
           {title ? (
-            <Text className="text-3xl tracking-[-0.9px] text-[var(--color-app-text-primary)] font-semibold">
+            <Text className="text-[length:var(--typography-xl-font-size)] leading-[var(--typography-xl-line-height)] tracking-[var(--typography-xl-letter-spacing)] text-[var(--color-text-primary)] font-semibold">
               {title}
             </Text>
           ) : null}
           {subtitle ? (
-            <Text className="text-base leading-7 text-[var(--color-app-text-secondary)] font-medium">{subtitle}</Text>
+            <Text className="text-[length:var(--typography-md-font-size)] leading-7 text-[var(--color-text-secondary)] font-medium">
+              {subtitle}
+            </Text>
           ) : null}
         </View>
       ) : null}

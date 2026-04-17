@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useDesignTokens } from "@shared/config/design-tokens";
 import { SendButton } from "@shared/ui/send-button";
 import { TextField } from "@shared/ui/text-field";
 
@@ -11,8 +11,8 @@ type CommentComposerProps = {
 };
 
 export function CommentComposer({ isSubmitting, onSubmit }: CommentComposerProps) {
+  const tokens = useDesignTokens();
   const [value, setValue] = useState("");
-  const insets = useSafeAreaInsets();
 
   const trimmedValue = value.trim();
   const canSubmit = trimmedValue.length >= 1 && trimmedValue.length <= 500 && !isSubmitting;
@@ -27,11 +27,8 @@ export function CommentComposer({ isSubmitting, onSubmit }: CommentComposerProps
   };
 
   return (
-    <View
-      className="border-t border-[var(--color-app-border-default)] bg-[var(--color-app-canvas-elevated)] px-5 pt-4"
-      style={{ paddingBottom: insets.bottom + 16 }}
-    >
-      <View className="flex-row items-center gap-2">
+    <View className="bg-[var(--color-surface-default)] px-[var(--component-layout-panel-padding)] py-[var(--space-md)]">
+      <View className="flex-row items-center gap-[var(--space-sm)] bg-[var(--color-surface-default)]">
         <View className="flex-1">
           <TextField
             maxLength={500}
@@ -39,13 +36,23 @@ export function CommentComposer({ isSubmitting, onSubmit }: CommentComposerProps
             value={value}
             onChangeText={setValue}
             placeholder="Ваш комментарий"
+            placeholderTextColor={tokens.semantic.color.text.tertiary}
+            classNames={{
+              root: "min-h-[var(--component-input-height-multiline)] bg-[var(--color-surface-default)] border-[var(--color-border-default)]",
+              input:
+                "text-[length:var(--typography-md-font-size)] leading-[var(--typography-md-line-height)] text-[var(--color-text-primary)] font-medium",
+            }}
           />
         </View>
         <SendButton
-          size={40}
+          size="sm"
           disabled={!canSubmit}
           isLoading={isSubmitting}
           onPress={handleSubmit}
+          classNames={{
+            root: "disabled:opacity-100",
+            content: "bg-transparent",
+          }}
         />
       </View>
     </View>

@@ -6,7 +6,10 @@ export function SurfaceCard({ className, ...props }: ViewProps) {
   return (
     <View
       {...props}
-      className={cn("rounded-xl bg-[var(--color-app-surface-default)]", className)}
+      className={cn(
+        "rounded-[var(--component-card-radius)] bg-[var(--color-surface-default)]",
+        className,
+      )}
     />
   );
 }

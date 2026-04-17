@@ -1,47 +1,63 @@
 import { Pressable, View, type PressableProps } from "react-native";
 
 import { cn } from "@shared/lib/cn";
+import { mergeRecipeSlots, type RecipeClassNames, tv } from "@shared/ui/recipe";
+
+const iconButtonRecipe = tv({
+  slots: {
+    root: "active:opacity-90 disabled:opacity-[var(--opacity-disabled)]",
+    content: "items-center justify-center rounded-full",
+  },
+  variants: {
+    tone: {
+      accent: {
+        content: "bg-[var(--color-brand-soft)]",
+      },
+      neutral: {
+        content: "bg-[var(--color-surface-muted)]",
+      },
+    },
+    size: {
+      sm: {
+        content: "h-[var(--component-icon-button-size-sm)] w-[var(--component-icon-button-size-sm)]",
+      },
+      md: {
+        content: "h-[var(--component-icon-button-size-md)] w-[var(--component-icon-button-size-md)]",
+      },
+    },
+  },
+  defaultVariants: {
+    tone: "neutral",
+    size: "md",
+  },
+});
 
 type IconButtonProps = Omit<PressableProps, "style"> & {
   icon: React.ReactNode;
   tone?: "neutral" | "accent";
-  size?: number;
+  size?: "sm" | "md";
+  classNames?: RecipeClassNames<"root" | "content">;
 };
 
 export function IconButton({
   icon,
   tone = "neutral",
-  size = 42,
+  size = "md",
   disabled,
+  className,
+  classNames,
   ...props
 }: IconButtonProps) {
+  const slots = mergeRecipeSlots(iconButtonRecipe({ tone, size }), classNames);
+
   return (
     <Pressable
       accessibilityRole="button"
       disabled={disabled}
       {...props}
-      className="active:opacity-90 disabled:opacity-40"
+      className={cn(slots.root, className)}
     >
-      <View
-        className={cn(
-          "items-center justify-center rounded-full",
-          getSizeClassName(size),
-          tone === "accent"
-            ? "bg-[var(--color-app-brand-soft)]"
-            : "bg-[var(--color-app-surface-muted)]",
-        )}
-      >
-        {icon}
-      </View>
+      <View className={slots.content}>{icon}</View>
     </Pressable>
   );
-}
-
-function getSizeClassName(size: number) {
-  switch (size) {
-    case 42:
-      return "h-[42px] w-[42px]";
-    default:
-      return "h-[42px] w-[42px]";
-  }
 }

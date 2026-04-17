@@ -1,6 +1,6 @@
 import { ActivityIndicator, Text, View } from "react-native";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
 
 type PaginationFooterProps = {
   isFetchingNextPage: boolean;
@@ -8,13 +8,25 @@ type PaginationFooterProps = {
 };
 
 export function PaginationFooter({ isFetchingNextPage, hasMore }: PaginationFooterProps) {
+  const tokens = useDesignTokens();
+
   if (isFetchingNextPage) {
     return (
-      <View className="items-center py-6">
-        <ActivityIndicator size="small" color={DESIGN_TOKENS.color.text.primary} />
+      <View className="items-center py-[var(--space-xl)]">
+        <ActivityIndicator size="small" color={tokens.semantic.color.text.primary} />
       </View>
     );
   }
 
-  return <View className="h-4" />;
+  if (hasMore) {
+    return (
+      <View className="items-center py-[var(--space-lg)]">
+        <Text className="text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)] text-[var(--color-text-secondary)] font-medium">
+          Scroll for more
+        </Text>
+      </View>
+    );
+  }
+
+  return null;
 }

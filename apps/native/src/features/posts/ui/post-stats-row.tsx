@@ -1,9 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
+import { ChatBubbleIcon } from "@shared/ui/chat-bubble-icon";
 import { formatCompactCount, formatRelativeDate } from "@shared/lib/formatters";
 import { ActionChip } from "@shared/ui/action-chip";
+import { HeartFilledIcon } from "@shared/ui/heart-filled-icon";
+import { HeartOutlineIcon } from "@shared/ui/heart-outline-icon";
 
 type PostStatsRowProps = {
   likesCount: number;
@@ -22,14 +24,16 @@ export function PostStatsRow({
   likeSlot,
   variant = "detail",
 }: PostStatsRowProps) {
+  const tokens = useDesignTokens();
+
   return (
-    <View className="gap-3">
+    <View className="gap-[var(--space-sm)]">
       {variant === "detail" && createdAt ? (
-        <Text className="text-xs uppercase tracking-[1.4px] text-[var(--color-app-text-tertiary)] font-medium">
+        <Text className="text-[length:var(--typography-xs-font-size)] leading-[var(--typography-xs-line-height)] uppercase tracking-[1.4px] text-[var(--color-text-tertiary)] font-medium">
           {formatRelativeDate(createdAt)}
         </Text>
       ) : null}
-      <View className="flex-row flex-wrap items-center gap-3">
+      <View className="flex-row flex-wrap items-center gap-[var(--space-sm)]">
         {likeSlot ?? (
           <ActionChip
             active={isLiked}
@@ -40,15 +44,15 @@ export function PostStatsRow({
                 : `${formatCompactCount(likesCount)} лайков`
             }
             icon={
-              <Ionicons
-                name={isLiked ? "heart" : "heart-outline"}
-                size={16}
-                color={
-                  isLiked
-                    ? DESIGN_TOKENS.color.feedback.like.surface
-                    : DESIGN_TOKENS.color.text.primary
-                }
-              />
+              isLiked ? (
+                <HeartFilledIcon
+                  color={tokens.semantic.color.feedback.like.surface}
+                />
+              ) : (
+                <HeartOutlineIcon
+                  color={tokens.semantic.color.text.stat}
+                />
+              )
             }
           />
         )}
@@ -60,11 +64,7 @@ export function PostStatsRow({
               : `${formatCompactCount(commentsCount)} комментариев`
           }
           icon={
-            <Ionicons
-              name="chatbubble-ellipses-outline"
-              size={16}
-              color={DESIGN_TOKENS.color.text.primary}
-            />
+            <ChatBubbleIcon color={tokens.semantic.color.text.stat} />
           }
         />
       </View>

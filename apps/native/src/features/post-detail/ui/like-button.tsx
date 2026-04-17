@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Pressable, Text, View } from "react-native";
 import Animated, {
@@ -9,9 +8,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
 import { cn } from "@shared/lib/cn";
 import { formatCompactCount } from "@shared/lib/formatters";
+import { HeartFilledIcon } from "@shared/ui/heart-filled-icon";
+import { HeartOutlineIcon } from "@shared/ui/heart-outline-icon";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -23,6 +24,7 @@ type LikeButtonProps = {
 };
 
 export function LikeButton({ isLiked, likesCount, disabled, onPress }: LikeButtonProps) {
+  const tokens = useDesignTokens();
   const scale = useSharedValue(1);
   const countScale = useSharedValue(1);
 
@@ -44,9 +46,9 @@ export function LikeButton({ isLiked, likesCount, disabled, onPress }: LikeButto
   return (
     <AnimatedPressable
       className={cn(
-        "flex-row items-center gap-3 self-start rounded-full px-4 py-3",
-        disabled ? "opacity-70" : null,
-        isLiked ? "bg-[var(--color-app-brand-soft)]" : "bg-[var(--color-app-surface-muted)]",
+        "flex-row self-start items-center gap-[var(--component-like-button-gap)] rounded-full px-[var(--component-like-button-padding-x)] py-[var(--component-like-button-padding-y)]",
+        disabled ? "opacity-[var(--opacity-muted)]" : null,
+        isLiked ? "bg-[var(--color-brand-soft)]" : "bg-[var(--color-surface-muted)]",
       )}
       disabled={disabled}
       onPress={handlePress}
@@ -54,23 +56,27 @@ export function LikeButton({ isLiked, likesCount, disabled, onPress }: LikeButto
     >
       <View
         className={cn(
-          "h-[34px] w-[34px] items-center justify-center rounded-full",
-          isLiked ? "bg-white" : "bg-[var(--color-app-surface-default)]",
+          "h-[var(--component-like-button-icon-size)] w-[var(--component-like-button-icon-size)] items-center justify-center rounded-full",
+          isLiked ? "bg-[var(--color-text-inverse)]" : "bg-[var(--color-surface-default)]",
         )}
-      >
-        <Ionicons
-          name={isLiked ? "heart" : "heart-outline"}
-          size={18}
-          color={isLiked ? DESIGN_TOKENS.color.brand.strong : DESIGN_TOKENS.color.text.primary}
-        />
+        >
+        {isLiked ? (
+          <HeartFilledIcon
+            color={tokens.semantic.color.brand.strong}
+          />
+        ) : (
+          <HeartOutlineIcon
+            color={tokens.semantic.color.text.primary}
+          />
+        )}
       </View>
       <Animated.View style={animatedCountStyle}>
         <Text
           className={cn(
-            "text-sm font-semibold",
+            "text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)] font-semibold",
             isLiked
-              ? "text-[var(--color-app-brand-strong)]"
-              : "text-[var(--color-app-text-primary)]",
+              ? "text-[var(--color-brand-strong)]"
+              : "text-[var(--color-text-primary)]",
           )}
         >
           {formatCompactCount(likesCount)} likes

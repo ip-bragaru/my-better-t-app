@@ -2,10 +2,10 @@ import { observer } from "mobx-react-lite";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { FlatList, RefreshControl, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useSession } from "@features/session/hooks/use-session";
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
 import { useFeedQuery } from "@features/feed/hooks/use-feed-query";
 import { FeedFilterTabs } from "@features/feed/ui/feed-filter-tabs";
 import { FeedPostCard } from "@features/feed/ui/feed-post-card";
@@ -21,6 +21,7 @@ export const FeedScreen = observer(function FeedScreen() {
   const [filter, setFilter] = useState<FeedFilter>("all");
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
+  const tokens = useDesignTokens();
 
   const feedQuery = useFeedQuery({
     token: token ?? "",
@@ -35,7 +36,11 @@ export const FeedScreen = observer(function FeedScreen() {
   const handleOpenPost = useCallback((post: Post) => {
     router.push({
       pathname: "./post/[postId]",
-      params: { postId: post.id },
+      params: {
+        postId: post.id,
+        authorName: post.author.displayName,
+        authorAvatarUrl: post.author.avatarUrl,
+      },
     });
   }, []);
 
@@ -88,11 +93,11 @@ export const FeedScreen = observer(function FeedScreen() {
             refreshing={isManualRefreshing}
             onRefresh={handleRefresh}
             progressViewOffset={insets.top}
-            tintColor={DESIGN_TOKENS.color.text.primary}
+            tintColor={tokens.semantic.color.text.primary}
           />
         }
         ListHeaderComponent={
-          <View className="px-4 pb-4 pt-4">
+          <View className="px-[var(--component-layout-card-padding)] pb-[var(--component-layout-card-padding)] pt-[var(--component-layout-card-padding)]">
             <FeedFilterTabs value={filter} onChange={setFilter} />
           </View>
         }
@@ -100,11 +105,11 @@ export const FeedScreen = observer(function FeedScreen() {
         renderItem={renderFeedPostItem}
         ListEmptyComponent={
           feedQuery.isLoading ? (
-            <View className="px-5 pt-4">
+            <View className="px-[var(--component-layout-panel-padding)] pt-[var(--component-layout-card-padding)]">
               <FeedSkeleton />
             </View>
           ) : (
-            <View className="flex-1 px-4 pt-10">
+            <View className="flex-1 px-[var(--component-layout-card-padding)] pt-[var(--space-control)]">
               <ScreenState
                 isLoading={false}
                 error={feedQuery.error}
@@ -119,23 +124,23 @@ export const FeedScreen = observer(function FeedScreen() {
           )
         }
         ListFooterComponent={
-          <View className="px-4" style={{ paddingBottom: insets.bottom }}>
+          <SafeAreaView edges={["bottom"]} className="px-[var(--component-layout-card-padding)]">
             {posts.length > 0 ? (
               <PaginationFooter
                 isFetchingNextPage={feedQuery.isFetchingNextPage}
                 hasMore={Boolean(feedQuery.hasNextPage)}
               />
             ) : null}
-          </View>
+          </SafeAreaView>
         }
       />
 
       {feedQuery.error && posts.length > 0 ? (
-        <View className="absolute inset-x-5 bottom-6 rounded-3xl bg-[var(--color-app-surface-default)] p-4 shadow-sm">
-          <Text className="text-sm text-[var(--color-app-text-secondary)] font-medium">
+        <View className="absolute inset-x-[var(--component-layout-floating-inset)] bottom-[var(--component-layout-floating-offset)] rounded-[var(--radius-xl)] border border-[var(--color-border-default)] bg-[var(--color-surface-default)] p-[var(--component-layout-card-padding)]">
+          <Text className="text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)] text-[var(--color-text-secondary)] font-medium">
             Не удалось обновить ленту. Кешированные карточки остаются доступны.
           </Text>
-          <View className="mt-3">
+          <View className="mt-[var(--space-sm)]">
             <Button label="Повторить" variant="neutral" size="sm" onPress={handleRefresh} />
           </View>
         </View>
@@ -149,5 +154,5 @@ function keyExtractor(item: Post) {
 }
 
 function FeedItemSeparator() {
-  return <View className="h-4" />;
+  return <View className="h-[var(--component-layout-card-padding)]" />;
 }

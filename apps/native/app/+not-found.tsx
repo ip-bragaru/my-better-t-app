@@ -1,28 +1,35 @@
 import { Link, Stack } from "expo-router";
-import { Surface } from "heroui-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Text, View } from "react-native";
 
-import { Container } from "@components/container";
 import { Button } from "@shared/ui/button";
+import { ScreenContainer } from "@shared/ui/screen-container";
+import { SadMascotIllustration } from "@shared/ui/sad-mascot-illustration";
+import { SurfaceCard } from "@shared/ui/surface-card";
 
 export default function NotFoundScreen() {
   return (
     <>
-      <Stack.Screen options={{ title: "Not Found" }} />
-      <Container>
-        <View className="flex-1 justify-center items-center p-4">
-          <Surface variant="secondary" className="items-center p-6 max-w-sm rounded-lg">
-            <Text className="text-4xl mb-3 font-medium">🤔</Text>
-            <Text className="text-foreground text-lg mb-1 font-medium">Page Not Found</Text>
-            <Text className="text-muted text-sm text-center mb-4 font-medium">
-              The page you're looking for doesn't exist.
-            </Text>
-            <Link href="../" asChild>
-              <Button label="Go Home" size="sm" />
-            </Link>
-          </Surface>
-        </View>
-      </Container>
+      <Stack.Screen options={{ headerShown: false }} />
+      <ScreenContainer>
+        <SafeAreaView edges={["top"]} className="flex-1 pt-[var(--space-xl)]">
+          <SurfaceCard className="flex-1 px-[var(--component-layout-card-padding)] pb-[var(--component-layout-panel-padding)]">
+            <View className="flex-1 w-full items-center justify-center gap-[var(--space-md)] pt-[var(--space-control)]">
+              <SadMascotIllustration width={112} height={112} />
+              <Text className="text-center text-[18px] leading-[26px] tracking-[0px] text-[var(--color-text-primary)] font-bold lining-nums tabular-nums stacked-fractions">
+                По вашему запросу ничего не найдено
+              </Text>
+              <Link href="/" asChild>
+                <Button
+                  label="На главную"
+                  size="md"
+                  fullWidth
+                />
+              </Link>
+            </View>
+          </SurfaceCard>
+        </SafeAreaView>
+      </ScreenContainer>
     </>
   );
 }

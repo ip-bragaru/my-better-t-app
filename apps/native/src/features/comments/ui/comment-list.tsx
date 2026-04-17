@@ -1,16 +1,17 @@
 import { FlatList, RefreshControl, View, type ListRenderItemInfo } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
-import type { Comment } from "@shared/model/types";
 import { CommentItem } from "@features/comments/ui/comment-item";
+import { useDesignTokens } from "@shared/config/design-tokens";
+import { cn } from "@shared/lib/cn";
+import type { Comment } from "@shared/model/types";
 
 type CommentListProps = {
   comments: Comment[];
   commentsHeader: React.ReactElement;
   postHeader: React.ReactElement;
   emptyState: React.ReactElement;
-  footer: React.ReactElement | null;
+  footer?: React.ReactElement;
   isRefreshing: boolean;
   onRefresh: () => void;
   onEndReached: () => void;
@@ -26,6 +27,7 @@ export function CommentList({
   onRefresh,
   onEndReached,
 }: CommentListProps) {
+  const tokens = useDesignTokens();
   const insets = useSafeAreaInsets();
 
   return (
@@ -43,22 +45,33 @@ export function CommentList({
         <RefreshControl
           refreshing={isRefreshing}
           onRefresh={onRefresh}
-          tintColor={DESIGN_TOKENS.color.text.primary}
+          progressViewOffset={insets.top + 30}
+          tintColor={tokens.semantic.color.text.primary}
         />
       }
       ListHeaderComponent={
-        <View style={{ paddingTop: insets.top + 12 }}>
+        <SafeAreaView edges={["top"]} className="pt-[30px]">
           {postHeader}
-          <View className="bg-white px-4 pb-2">
+          <View className="bg-[var(--color-surface-default)] px-[var(--component-layout-card-padding)] pb-[var(--space-xs)]">
             {commentsHeader}
           </View>
+        </SafeAreaView>
+      }
+      ListEmptyComponent={
+        <View className="bg-[var(--color-surface-default)] px-[var(--component-layout-panel-padding)]">
+          {emptyState}
         </View>
       }
-      ListEmptyComponent={<View className="bg-white px-5">{emptyState}</View>}
       ListFooterComponent={
-        <View className="bg-white px-5 pb-5">
+        <SafeAreaView
+          edges={["bottom"]}
+          className={cn(
+            "bg-[var(--color-surface-default)] px-[var(--component-layout-panel-padding)] pb-[var(--component-layout-panel-padding)]",
+            footer && "bg-[var(--color-canvas-default)] pb-[var(--space-sm)]",
+          )}
+        >
           {footer}
-        </View>
+        </SafeAreaView>
       }
     />
   );
@@ -70,9 +83,8 @@ function keyExtractor(item: Comment) {
 
 function renderCommentItem({ item }: ListRenderItemInfo<Comment>) {
   return (
-    <View className="bg-white px-5 py-2">
+    <View className="bg-[var(--color-surface-default)] px-[var(--component-layout-panel-padding)] py-[var(--space-xs)]">
       <CommentItem comment={item} />
     </View>
   );
 }
-

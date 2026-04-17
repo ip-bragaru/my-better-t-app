@@ -29,23 +29,26 @@ export function RemoteImage({
 
   if (hasError) {
     return (
-      <View className={cn("items-center justify-center bg-[var(--color-app-surface-input)]", className)}>
-        <Text className="px-6 text-center text-sm text-[var(--color-app-text-secondary)] font-medium">{alt}</Text>
+      <View className={cn("items-center justify-center bg-[var(--color-surface-input)]", className)}>
+        <Text className="px-[var(--space-xl)] text-center text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)] text-[var(--color-text-secondary)] font-medium">
+          {alt}
+        </Text>
       </View>
     );
   }
 
   return (
     <View className={className}>
-      {isLoading && (
-        <SkeletonBlock className="absolute inset-0 rounded-none" />
-      )}
+      {isLoading && <SkeletonBlock className="absolute inset-0 rounded-none" />}
       <Image
-        style={{ width: "100%", height: "100%" }}
+        className="h-full w-full"
         source={{ uri }}
         accessibilityLabel={alt}
         onLoad={() => setIsLoading(false)}
-        onError={() => { setIsLoading(false); setHasError(true); }}
+        onError={() => {
+          setIsLoading(false);
+          setHasError(true);
+        }}
         resizeMode={resizeMode}
         blurRadius={blurRadius}
       />

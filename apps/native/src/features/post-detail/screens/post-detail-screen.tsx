@@ -1,8 +1,7 @@
-import { Ionicons } from "@expo/vector-icons";
 import { observer } from "mobx-react-lite";
 import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 
 import { useCommentsQuery } from "@features/comments/hooks/use-comments-query";
 import { useCreateCommentMutation } from "@features/comments/hooks/use-create-comment-mutation";
@@ -11,20 +10,31 @@ import { CommentComposer } from "@features/comments/ui/comment-composer";
 import { CommentsSectionHeader } from "@features/comments/ui/comments-section-header";
 import { DetailPostHeader } from "@features/posts/ui/detail-post-header";
 import { useToggleLikeMutation } from "@features/post-detail/hooks/use-toggle-like-mutation";
+import { PostDetailErrorState } from "@features/post-detail/ui/post-detail-error-state";
 import { usePostDetailQuery } from "@features/post-detail/hooks/use-post-detail-query";
 import { PostDetailSkeleton } from "@features/post-detail/ui/post-detail-skeleton";
 import { useSession } from "@features/session/hooks/use-session";
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
 import { formatCompactCount } from "@shared/lib/formatters";
 import { ActionChip } from "@shared/ui/action-chip";
-import { ScreenContainer } from "@shared/ui/screen-container";
+import { Button } from "@shared/ui/button";
+import { HeartFilledIcon } from "@shared/ui/heart-filled-icon";
+import { HeartOutlineIcon } from "@shared/ui/heart-outline-icon";
 import { PaginationFooter } from "@shared/ui/pagination-footer";
+import { ScreenContainer } from "@shared/ui/screen-container";
 import { EmptyState, ErrorState, LoadingState } from "@shared/ui/screen-state";
 
 export const PostDetailScreen = observer(function PostDetailScreen() {
-  const params = useLocalSearchParams<{ postId: string }>();
-  const postId = normalizePostId(params.postId);
+  const params = useLocalSearchParams<{
+    postId: string;
+    authorName?: string;
+    authorAvatarUrl?: string;
+  }>();
+  const postId = normalizeRouteParam(params.postId);
+  const authorName = normalizeRouteParam(params.authorName);
+  const authorAvatarUrl = normalizeRouteParam(params.authorAvatarUrl);
   const { token, isReady } = useSession();
+  const tokens = useDesignTokens();
 
   const postQuery = usePostDetailQuery({
     token: token ?? "",
@@ -63,6 +73,8 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     [commentsQuery.data],
   );
 
+  const [isManualRefreshing, setIsManualRefreshing] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -90,10 +102,27 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     await createCommentMutation.mutateAsync(value);
   }, [createCommentMutation]);
 
-  const handleRefresh = useCallback(() => {
-    postQuery.refetch();
-    commentsRefetch();
+  const handleRefresh = useCallback(async () => {
+    setIsManualRefreshing(true);
+    try {
+      await Promise.all([postQuery.refetch(), commentsRefetch()]);
+    } finally {
+      setIsManualRefreshing(false);
+    }
   }, [commentsRefetch, postQuery]);
+
+  const renderFooter = useCallback(() => {
+    if (comments.length > 0) {
+      return (
+        <PaginationFooter
+          isFetchingNextPage={commentsQuery.isFetchingNextPage}
+          hasMore={Boolean(commentsQuery.hasNextPage)}
+        />
+      );
+    }
+
+    return undefined;
+  }, [comments.length, commentsQuery.hasNextPage]);
 
   const renderContent = () => {
     if (!isReady) {
@@ -102,19 +131,15 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
 
     if (!postId) {
       return (
-        <ScreenContainer className="items-center justify-center px-8">
-          <Text className="text-center text-2xl text-[var(--color-app-text-primary)] font-semibold">
+        <ScreenContainer className="items-center justify-center px-[var(--space-xxxl)]">
+          <Text className="text-center text-[length:var(--typography-lg-font-size)] leading-[var(--typography-lg-line-height)] text-[var(--color-text-primary)] font-semibold">
             Invalid post link
           </Text>
-          <Text className="mt-3 text-center text-sm leading-6 text-[var(--color-app-text-secondary)] font-medium">
+          <Text className="mt-[var(--space-sm)] text-center text-[length:var(--typography-sm-font-size)] leading-6 text-[var(--color-text-secondary)] font-medium">
             This detail route is missing a valid post identifier.
           </Text>
           <Link href="../" asChild>
-            <Pressable className="mt-5 rounded-full bg-[var(--color-app-text-primary)] px-5 py-3">
-              <Text className="text-sm text-[var(--color-app-text-inverse)] font-semibold">
-                Back to feed
-              </Text>
-            </Pressable>
+            <Button className="mt-[var(--space-lg)]" label="Back to feed" size="sm" />
           </Link>
         </ScreenContainer>
       );
@@ -129,7 +154,13 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
     }
 
     if (postQuery.error || !postQuery.data) {
-      return <ErrorState error={postQuery.error} onRetry={postQuery.refetch} />;
+      return (
+        <PostDetailErrorState
+          authorName={authorName}
+          authorAvatarUrl={authorAvatarUrl}
+          onRetry={postQuery.refetch}
+        />
+      );
     }
 
     const post = postQuery.data;
@@ -142,7 +173,7 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
         <CommentList
           comments={comments}
           onEndReached={handleEndReached}
-          isRefreshing={postQuery.isRefetching || commentsQuery.isRefetching}
+          isRefreshing={isManualRefreshing}
           onRefresh={handleRefresh}
           postHeader={
             <DetailPostHeader
@@ -153,11 +184,15 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
                   size="sm"
                   label={formatCompactCount(post.likesCount)}
                   icon={
-                    <Ionicons
-                      name={post.isLiked ? "heart" : "heart-outline"}
-                      size={16}
-                      color={post.isLiked ? DESIGN_TOKENS.color.feedback.like.surface : DESIGN_TOKENS.color.text.primary}
-                    />
+                    post.isLiked ? (
+                      <HeartFilledIcon
+                        color={tokens.semantic.color.feedback.like.surface}
+                      />
+                    ) : (
+                      <HeartOutlineIcon
+                        color={tokens.semantic.color.text.stat}
+                      />
+                    )
                   }
                   onPress={() => likeMutation.mutate()}
                   disabled={likeMutation.isPending}
@@ -179,15 +214,9 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
             )
           }
           footer={
-            comments.length > 0 ? (
-              <PaginationFooter
-                isFetchingNextPage={commentsQuery.isFetchingNextPage}
-                hasMore={Boolean(commentsQuery.hasNextPage)}
-              />
-            ) : null
+            renderFooter()
           }
         />
-
         <CommentComposer
           isSubmitting={createCommentMutation.isPending}
           onSubmit={handleSubmitComment}
@@ -197,14 +226,14 @@ export const PostDetailScreen = observer(function PostDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[var(--color-app-canvas-default)]">
+    <View className="flex-1 bg-[var(--color-canvas-default)]">
       <Stack.Screen options={{ headerShown: false }} />
       {renderContent()}
     </View>
   );
 });
 
-function normalizePostId(param: string | string[] | undefined) {
+function normalizeRouteParam(param: string | string[] | undefined) {
   if (Array.isArray(param)) {
     return param[0];
   }

@@ -40,6 +40,10 @@ my-better-t-app/
 - `pnpm run build`: Build all applications
 - `pnpm run check-types`: Check TypeScript types across all apps
 - `pnpm run dev:native`: Start the React Native/Expo development server
+- `pnpm run lint`: Run Biome linting across the workspace
+- `pnpm run lint:fix`: Apply Biome lint fixes when safe
+- `pnpm run format`: Format the workspace with Biome
+- `pnpm run check:biome`: Run Biome checks across the workspace
 
 ## Mecenate Mobile Assignment
 

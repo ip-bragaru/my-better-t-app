@@ -1,5 +1,6 @@
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
+import { TextLink } from "@shared/ui/text-link";
 import { cn } from "@shared/lib/cn";
 
 type PostTextBlockProps = {
@@ -20,31 +21,27 @@ export function PostTextBlock({
   onActionPress,
 }: PostTextBlockProps) {
   return (
-    <View className="gap-2">
+    <View className="gap-[var(--space-xs)]">
       {title ? (
         <Text
           className={cn(
-            "text-[var(--color-app-text-primary)] font-bold lining-nums tabular-nums stacked-fractions",
+            "font-bold text-[var(--color-text-primary)] lining-nums tabular-nums stacked-fractions",
             titleSize === "xl"
-              ? "text-[32px] leading-[40px] tracking-[-0.8px]"
-              : "text-[18px] leading-[26px] tracking-[0px]",
+              ? "text-[length:var(--typography-xl-font-size)] leading-[var(--typography-xl-line-height)] tracking-[var(--typography-xl-letter-spacing)]"
+              : "text-[length:var(--typography-lg-font-size)] leading-[var(--typography-lg-line-height)] tracking-[var(--typography-lg-letter-spacing)]",
           )}
         >
           {title}
         </Text>
       ) : null}
       <Text
-        className="text-[15px] leading-5 tracking-[0px] text-[var(--color-app-text-secondary)] font-medium lining-nums tabular-nums stacked-fractions"
+        className="text-[length:var(--typography-md-font-size)] leading-[var(--typography-md-line-height)] tracking-[var(--typography-md-letter-spacing)] text-[var(--color-text-primary)] font-medium lining-nums tabular-nums stacked-fractions"
         numberOfLines={maxLines}
       >
         {text}
       </Text>
       {actionLabel && onActionPress ? (
-        <Pressable onPress={onActionPress}>
-          <Text className="text-sm text-[var(--color-app-brand-strong)] font-semibold">
-            {actionLabel}
-          </Text>
-        </Pressable>
+        <TextLink label={actionLabel} onPress={onActionPress} />
       ) : null}
     </View>
   );

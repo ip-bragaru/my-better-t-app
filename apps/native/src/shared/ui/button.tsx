@@ -1,43 +1,57 @@
 import { ActivityIndicator, Pressable, Text, View, type PressableProps } from "react-native";
-import { tv } from "tailwind-variants";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
 import { cn } from "@shared/lib/cn";
+import { mergeRecipeSlots, type RecipeClassNames, tv } from "@shared/ui/recipe";
 
-const buttonInner = tv({
-  base: "flex-row items-center justify-center gap-2 rounded-[14px]",
+const buttonRecipe = tv({
+  slots: {
+    root: "group rounded-[var(--component-button-radius)] active:opacity-90",
+    content: "flex-row items-center justify-center rounded-[var(--component-button-radius)]",
+    label: "text-center font-semibold",
+  },
   variants: {
     variant: {
-      accent: "bg-[var(--color-app-brand-primary)] group-hover:bg-[var(--color-app-brand-pressed)] group-disabled:bg-[var(--color-app-brand-disabled)]",
-      neutral: "bg-[var(--color-app-surface-muted)] group-disabled:opacity-45",
-      ghost: "bg-transparent group-disabled:opacity-45",
+      accent: {
+        content:
+          "bg-[var(--color-brand-primary)] group-hover:bg-[var(--color-brand-pressed)] group-disabled:bg-[var(--color-brand-disabled)]",
+        label:
+          "text-[var(--color-text-inverse)] group-hover:text-[var(--color-brand-pressed-text)]",
+      },
+      neutral: {
+        content: "bg-[var(--color-surface-muted)] group-disabled:opacity-[var(--opacity-disabled)]",
+        label: "text-[var(--color-text-primary)]",
+      },
+      ghost: {
+        content: "bg-transparent group-disabled:opacity-[var(--opacity-disabled)]",
+        label: "text-[var(--color-brand-primary)]",
+      },
     },
     size: {
-      sm: "min-h-10 px-[14px] py-[10px]",
-      md: "h-[42px] px-8",
+      sm: {
+        content:
+          "min-h-[var(--component-button-size-sm-height)] px-[var(--component-button-size-sm-padding-x)] py-[var(--component-button-size-sm-padding-y)] gap-[var(--component-button-size-sm-gap)]",
+        label:
+          "text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)]",
+      },
+      md: {
+        content:
+          "min-h-[var(--component-button-size-md-height)] px-[var(--component-button-size-md-padding-x)] py-[var(--component-button-size-md-padding-y)] gap-[var(--component-button-size-md-gap)]",
+        label:
+          "text-[length:var(--typography-md-font-size)] leading-[var(--typography-lg-line-height)]",
+      },
+    },
+    fullWidth: {
+      true: { root: "self-stretch" },
+      false: { root: "self-start" },
     },
   },
-  defaultVariants: { variant: "accent", size: "md" },
-});
-
-const buttonLabel = tv({
-  base: "text-center font-semibold",
-  variants: {
-    variant: {
-      accent: "text-[var(--color-app-text-inverse)] group-hover:text-[var(--color-app-brand-pressed-text)]",
-      neutral: "text-[var(--color-app-text-primary)]",
-      ghost: "text-[var(--color-app-brand-primary)]",
-    },
-    size: {
-      sm: "text-[13px]",
-      md: "text-[15px] leading-[26px]",
-    },
-  },
-  defaultVariants: { variant: "accent", size: "md" },
+  defaultVariants: { variant: "accent", size: "md", fullWidth: false },
 });
 
 type ButtonVariant = "accent" | "neutral" | "ghost";
 type ButtonSize = "sm" | "md";
+type ButtonClassNames = RecipeClassNames<"root" | "content" | "label">;
 
 type ButtonProps = Omit<PressableProps, "style"> & {
   label: string;
@@ -47,6 +61,7 @@ type ButtonProps = Omit<PressableProps, "style"> & {
   leftSlot?: React.ReactNode;
   rightSlot?: React.ReactNode;
   fullWidth?: boolean;
+  classNames?: ButtonClassNames;
 };
 
 export function Button({
@@ -58,28 +73,34 @@ export function Button({
   rightSlot,
   disabled,
   fullWidth,
+  className,
+  classNames,
   ...props
 }: ButtonProps) {
+  const tokens = useDesignTokens();
+  const slots = mergeRecipeSlots(buttonRecipe({ variant, size, fullWidth }), classNames);
+
   return (
     <Pressable
       accessibilityRole="button"
       disabled={disabled || isLoading}
       {...props}
-      className={cn(
-        "group rounded-[14px] active:opacity-90",
-        fullWidth ? "self-stretch" : "self-start",
-      )}
+      className={cn(slots.root, className)}
     >
-      <View className={buttonInner({ variant, size })}>
+      <View className={slots.content}>
         {isLoading ? (
           <ActivityIndicator
             size="small"
-            color={variant === "accent" ? DESIGN_TOKENS.color.brand.pressed : DESIGN_TOKENS.color.brand.primary}
+            color={
+              variant === "accent"
+                ? tokens.semantic.color.brand.pressed
+                : tokens.semantic.color.brand.primary
+            }
           />
         ) : (
           <>
             {leftSlot}
-            <Text className={buttonLabel({ variant, size })}>{label}</Text>
+            <Text className={slots.label}>{label}</Text>
             {rightSlot}
           </>
         )}

@@ -1,11 +1,59 @@
 import { useState } from "react";
 import { TextInput, View, type TextInputProps } from "react-native";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
+import { cn } from "@shared/lib/cn";
+import { mergeRecipeSlots, type RecipeClassNames, tv } from "@shared/ui/recipe";
+
+const textFieldRecipe = tv({
+  slots: {
+    root:
+      "flex-row rounded-[var(--component-input-radius)] border-[length:var(--component-input-border-width)] py-[var(--component-input-padding-y)] px-[var(--component-input-padding-x)] gap-[var(--component-input-gap)]",
+    input:
+      "flex-1 p-0 font-medium text-[length:var(--typography-md-font-size)] leading-[var(--typography-md-line-height)]",
+  },
+  variants: {
+    focused: {
+      true: {
+        root: "bg-[var(--color-surface-default)] border-[var(--color-surface-input)]",
+      },
+      false: {
+        root: "border-transparent",
+      },
+    },
+    disabled: {
+      true: {
+        root: "bg-[var(--color-surface-default)]",
+        input: "text-[var(--color-text-disabled)]",
+      },
+      false: {
+        root: "bg-[var(--color-surface-input)]",
+        input: "text-[var(--color-text-primary)]",
+      },
+    },
+    multiline: {
+      true: {
+        root: "items-start",
+        input: "min-h-[var(--component-input-height-multiline)]",
+      },
+      false: {
+        root: "min-h-[var(--component-input-height)] items-center",
+      },
+    },
+  },
+  defaultVariants: {
+    focused: false,
+    disabled: false,
+    multiline: false,
+  },
+});
+
+type TextFieldClassNames = RecipeClassNames<"root" | "input">;
 
 type TextFieldProps = TextInputProps & {
   leadingSlot?: React.ReactNode;
   trailingSlot?: React.ReactNode;
+  classNames?: TextFieldClassNames;
 };
 
 export function TextField({
@@ -15,47 +63,33 @@ export function TextField({
   editable = true,
   onFocus,
   onBlur,
+  className,
+  classNames,
   ...props
 }: TextFieldProps) {
   const [focused, setFocused] = useState(false);
+  const tokens = useDesignTokens();
 
   const disabled = editable === false;
-
-  const backgroundColor = disabled || focused ? DESIGN_TOKENS.color.surface.default : DESIGN_TOKENS.color.surface.input;
-  const borderColor = focused && !disabled ? DESIGN_TOKENS.color.surface.input : "transparent";
-  const textColor = disabled ? DESIGN_TOKENS.color.text.disabled : DESIGN_TOKENS.color.text.primary;
-  const placeholderColor = disabled ? DESIGN_TOKENS.color.text.disabled : DESIGN_TOKENS.color.text.placeholder;
+  const slots = mergeRecipeSlots(
+    textFieldRecipe({
+      focused: focused && !disabled,
+      disabled,
+      multiline: Boolean(multiline),
+    }),
+    classNames,
+  );
 
   return (
-    <View
-      style={{
-        borderRadius: 20,
-        paddingVertical: 10,
-        paddingHorizontal: 16,
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 6,
-        minHeight: 40,
-        backgroundColor,
-        borderWidth: 2,
-        borderColor,
-      }}
-    >
+    <View className={cn(slots.root, className)}>
       {leadingSlot}
       <TextInput
-        style={[
-          {
-            flex: 1,
-            fontSize: 15,
-            lineHeight: 20,
-            fontFamily: "Manrope",
-            fontWeight: "500",
-            color: textColor,
-            padding: 0,
-          },
-          multiline ? { minHeight: 44 } : null,
-        ]}
-        placeholderTextColor={placeholderColor}
+        className={slots.input}
+        placeholderTextColor={
+          disabled
+            ? tokens.semantic.color.text.disabled
+            : tokens.semantic.color.text.placeholder
+        }
         multiline={multiline}
         editable={editable}
         onFocus={(e) => {

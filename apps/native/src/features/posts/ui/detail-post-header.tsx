@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
 import type { Post } from "@shared/model/types";
 
 import { PostAuthorRow } from "@features/posts/ui/post-author-row";
@@ -21,29 +21,30 @@ export function DetailPostHeader({
 }: DetailPostHeaderProps) {
   const router = useRouter();
   const canGoBack = router.canGoBack();
+  const tokens = useDesignTokens();
 
   return (
     <View>
-      <View className="px-4">
+      <View className="px-[var(--component-layout-card-padding)]">
         <Pressable
           onPress={() => canGoBack ? router.back() : router.replace("/")}
           hitSlop={8}
-          className="flex-row items-center gap-1.5 self-start h-9.5 mt-1 mb-3.5"
+          className="mt-[var(--space-xs)] mb-[var(--space-sm)] flex-row h-[var(--size-control-sm)] self-start items-center gap-[var(--space-xs)]"
         >
-          <Ionicons name="chevron-back" size={18} color={DESIGN_TOKENS.color.brand.strong} />
-          <Text className="text-sm font-semibold text-[var(--color-app-brand-strong)]">
+          <Ionicons name="chevron-back" size={18} color={tokens.semantic.color.brand.strong} />
+          <Text className="text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)] font-semibold text-[var(--color-brand-strong)]">
             {canGoBack ? "Назад" : "К Постам"}
           </Text>
         </Pressable>
       </View>
 
-      <View className="gap-2 bg-white px-4 pb-3 pt-4">
+      <View className="gap-[var(--space-xs)] bg-[var(--color-surface-default)] px-[var(--component-layout-card-padding)] pb-[var(--space-sm)] pt-[var(--space-md)]">
         <PostAuthorRow author={post.author} showVerified={false} />
-        <View className="-mx-4">
-          <PostImage uri={post.coverUrl} alt={post.title} rounded={0} />
+        <View className="-mx-[var(--component-layout-card-padding)]">
+          <PostImage uri={post.coverUrl} alt={post.title} rounded="none" />
         </View>
         <PostTextBlock title={post.title} text={post.preview} />
-        <View className="mt-2">
+        <View className="mt-[var(--space-xs)]">
           <PostStatsRow
             likesCount={post.likesCount}
             commentsCount={post.commentsCount}

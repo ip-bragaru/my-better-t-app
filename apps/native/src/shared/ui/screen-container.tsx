@@ -14,7 +14,11 @@ export function ScreenContainer({
   return (
     <View
       {...props}
-      className={cn("flex-1 bg-[var(--color-app-canvas-default)]", padded && "px-5", className)}
+      className={cn(
+        "flex-1 bg-[var(--color-canvas-default)]",
+        padded && "px-[var(--component-layout-screen-padding)]",
+        className,
+      )}
     />
   );
 }

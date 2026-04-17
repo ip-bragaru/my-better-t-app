@@ -1,13 +1,27 @@
 import { Pressable, Text, type PressableProps } from "react-native";
-import { tv } from "tailwind-variants";
 
-const textLink = tv({
-  base: "font-semibold text-[var(--color-app-brand-primary)]",
+import { cn } from "@shared/lib/cn";
+import { mergeRecipeSlots, type RecipeClassNames, tv } from "@shared/ui/recipe";
+
+const textLinkRecipe = tv({
+  slots: {
+    root: "active:opacity-70 disabled:opacity-[var(--opacity-disabled)]",
+    label: "font-semibold text-[var(--color-brand-primary)]",
+  },
   variants: {
     size: {
-      sm: "text-[13px]",
-      md: "text-sm",
-      lg: "text-base",
+      sm: {
+        label:
+          "text-[length:var(--typography-xs-font-size)] leading-[var(--typography-xs-line-height)]",
+      },
+      md: {
+        label:
+          "text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)]",
+      },
+      lg: {
+        label:
+          "text-[length:var(--typography-md-font-size)] leading-[var(--typography-md-line-height)]",
+      },
     },
   },
   defaultVariants: { size: "md" },
@@ -16,17 +30,27 @@ const textLink = tv({
 type TextLinkProps = Omit<PressableProps, "style"> & {
   label: string;
   size?: "sm" | "md" | "lg";
+  classNames?: RecipeClassNames<"root" | "label">;
 };
 
-export function TextLink({ label, size = "md", disabled, ...props }: TextLinkProps) {
+export function TextLink({
+  label,
+  size = "md",
+  disabled,
+  className,
+  classNames,
+  ...props
+}: TextLinkProps) {
+  const slots = mergeRecipeSlots(textLinkRecipe({ size }), classNames);
+
   return (
     <Pressable
       accessibilityRole="link"
       disabled={disabled}
       {...props}
-      className="active:opacity-70 disabled:opacity-40"
+      className={cn(slots.root, className)}
     >
-      <Text className={textLink({ size })}>{label}</Text>
+      <Text className={slots.label}>{label}</Text>
     </Pressable>
   );
 }

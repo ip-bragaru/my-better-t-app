@@ -13,18 +13,18 @@ export function PostTierBadge({ tier }: PostTierBadgeProps) {
   return (
     <View
       className={cn(
-        "self-start rounded-full px-3 py-1.5",
+        "self-start rounded-full px-[var(--component-badge-padding-x)] py-[var(--component-badge-padding-y)]",
         isPaid
-          ? "bg-[var(--color-app-brand-soft)]"
-          : "bg-[var(--color-app-feedback-success-surface)]",
+          ? "bg-[var(--color-brand-soft)]"
+          : "bg-[var(--color-feedback-success-surface)]",
       )}
     >
       <Text
         className={cn(
-          "text-xs uppercase tracking-[1.4px] font-semibold",
+          "text-[length:var(--typography-xs-font-size)] leading-[var(--typography-xs-line-height)] uppercase tracking-[1.4px] font-semibold",
           isPaid
-            ? "text-[var(--color-app-brand-strong)]"
-            : "text-[var(--color-app-feedback-success-text)]",
+            ? "text-[var(--color-brand-strong)]"
+            : "text-[var(--color-feedback-success-text)]",
         )}
       >
         {isPaid ? "Платный" : "Бесплатный"}

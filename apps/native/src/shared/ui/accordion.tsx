@@ -11,19 +11,19 @@ import { tv } from "tailwind-variants";
 import { cn } from "@shared/lib/cn";
 
 const accordionTrigger = tv({
-  base: "flex-row items-center justify-between gap-3 py-4",
+  base: "flex-row items-center justify-between gap-[var(--space-sm)] py-[var(--component-layout-card-padding)]",
   variants: {
     disabled: {
-      true: "opacity-40",
+      true: "opacity-[var(--opacity-disabled)]",
     },
   },
 });
 
 const accordionLabel = tv({
-  base: "flex-1 text-base font-semibold text-[var(--color-app-text-primary)]",
+  base: "flex-1 text-[length:var(--typography-md-font-size)] leading-[var(--typography-md-line-height)] font-semibold text-[var(--color-text-primary)]",
   variants: {
     open: {
-      true: "text-[var(--color-app-brand-primary)]",
+      true: "text-[var(--color-brand-primary)]",
     },
   },
 });
@@ -49,11 +49,11 @@ function Chevron({ open }: { open: boolean }) {
       <View className="h-5 w-5 items-center justify-center">
         <View className="relative h-3 w-3">
           <View
-            className="absolute left-0 top-[3px] h-[2px] w-[9px] rounded-full bg-[var(--color-app-brand-primary)]"
+            className="absolute left-0 top-[3px] h-[2px] w-[9px] rounded-full bg-[var(--color-brand-primary)]"
             style={{ transform: [{ rotate: "45deg" }, { translateX: 1 }] }}
           />
           <View
-            className="absolute bottom-[3px] left-0 h-[2px] w-[9px] rounded-full bg-[var(--color-app-brand-primary)]"
+            className="absolute bottom-[3px] left-0 h-[2px] w-[9px] rounded-full bg-[var(--color-brand-primary)]"
             style={{ transform: [{ rotate: "-45deg" }, { translateX: 1 }] }}
           />
         </View>
@@ -96,7 +96,7 @@ function AccordionContent({
             setMeasuredHeight(h);
           }
         }}
-        className="pb-4"
+        className="pb-[var(--component-layout-card-padding)]"
       >
         {children}
       </View>
@@ -123,7 +123,7 @@ export function AccordionItem({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <View className="border-b border-[var(--color-app-border-default)]">
+    <View className="border-b border-[var(--color-border-default)]">
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ expanded: open, disabled }}
@@ -151,7 +151,7 @@ export function Accordion({ children, className }: AccordionProps) {
   return (
     <View
       className={cn(
-        "rounded-[var(--radius-lg)] border border-[var(--color-app-border-default)] px-4",
+        "rounded-[var(--radius-lg)] border border-[var(--color-border-default)] px-[var(--component-layout-card-padding)]",
         className,
       )}
     >

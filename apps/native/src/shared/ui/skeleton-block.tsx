@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { View, type ViewProps } from "react-native";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { cn } from "@shared/lib/cn";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -13,7 +13,7 @@ import Animated, {
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
-export function SkeletonBlock({ style, ...props }: ViewProps) {
+export function SkeletonBlock({ style, className, ...props }: ViewProps & { className?: string }) {
   const opacity = useSharedValue(0.45);
 
   useEffect(() => {
@@ -34,14 +34,8 @@ export function SkeletonBlock({ style, ...props }: ViewProps) {
   return (
     <AnimatedView
       {...props}
-      style={[
-        {
-          borderRadius: 16,
-          backgroundColor: DESIGN_TOKENS.color.feedback.skeleton,
-        },
-        style,
-        animatedStyle,
-      ]}
+      className={cn("rounded-[var(--radius-lg)] bg-[var(--color-feedback-skeleton)]", className)}
+      style={[style, animatedStyle]}
     />
   );
 }

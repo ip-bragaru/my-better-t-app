@@ -1,26 +1,31 @@
 {
-    "name": "my-better-t-app",
-    "private": true,
-    "workspaces": [
-        "apps/*",
-        "packages/*"
-    ],
-    "type": "module",
-    "scripts": {
-        "dev": "turbo dev",
-        "build": "turbo build",
-        "check-types": "turbo check-types",
-        "dev:native": "turbo -F native generate:tokens && turbo -F native dev"
-    },
-    "dependencies": {
-        "@my-better-t-app/env": "workspace:*",
-        "dotenv": "catalog:",
-        "zod": "catalog:"
-    },
-    "devDependencies": {
-        "@my-better-t-app/config": "workspace:*",
-        "turbo": "^2.8.12",
-        "typescript": "catalog:"
-    },
-    "packageManager": "pnpm@10.15.1"
+  "name": "my-better-t-app",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "dev:native": "turbo -F native generate:tokens && turbo -F native dev",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "check:biome": "biome check ."
+  },
+  "dependencies": {
+    "@my-better-t-app/env": "workspace:*",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.12",
+    "@my-better-t-app/config": "workspace:*",
+    "turbo": "^2.8.12",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@10.15.1"
 }

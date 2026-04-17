@@ -1,12 +1,13 @@
-import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { memo, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from "react-native-reanimated";
 
-import { DESIGN_TOKENS } from "@shared/config/design-tokens";
+import { useDesignTokens } from "@shared/config/design-tokens";
 import type { Comment } from "@shared/model/types";
 import { Avatar } from "@shared/ui/avatar";
+import { HeartFilledIcon } from "@shared/ui/heart-filled-icon";
+import { HeartOutlineIcon } from "@shared/ui/heart-outline-icon";
 
 type CommentItemProps = {
   comment: Comment;
@@ -15,6 +16,7 @@ type CommentItemProps = {
 };
 
 function CommentItemComponent({ comment, likesCount = 0, isLiked: initialIsLiked = false }: CommentItemProps) {
+  const tokens = useDesignTokens();
   const [liked, setLiked] = useState(initialIsLiked);
   const [count, setCount] = useState(likesCount);
 
@@ -31,25 +33,34 @@ function CommentItemComponent({ comment, likesCount = 0, isLiked: initialIsLiked
   };
 
   return (
-    <View className="flex-row items-start gap-3">
-      <Avatar name={comment.author.displayName} uri={comment.author.avatarUrl} size={44} accent />
-      <View className="flex-1 flex-row items-start justify-between gap-3">
+    <View className="flex-row items-start gap-[var(--space-sm)]">
+      <Avatar name={comment.author.displayName} uri={comment.author.avatarUrl} size="md" accent />
+      <View className="flex-1 flex-row items-start justify-between gap-[var(--space-sm)]">
         <View className="flex-1">
-          <Text className="text-[15px] leading-5 text-[var(--color-app-text-primary)] font-bold">
+          <Text className="text-[length:var(--typography-md-font-size)] leading-[var(--typography-md-line-height)] text-[var(--color-text-primary)] font-bold">
             {comment.author.displayName}
           </Text>
-          <Text className="mt-1 text-sm leading-5 text-[var(--color-app-text-secondary)] font-medium">
+          <Text className="mt-[var(--space-xxs)] text-[length:var(--typography-sm-font-size)] leading-5 text-[var(--color-text-primary)] font-medium">
             {comment.text}
           </Text>
         </View>
         <Pressable onPress={handleLike} hitSlop={10}>
-          <Animated.View className="mt-0.5 items-center gap-1" style={animatedStyle}>
-            <Ionicons
-              name={liked ? "heart" : "heart-outline"}
-              size={18}
-              color={liked ? DESIGN_TOKENS.color.feedback.like.icon : DESIGN_TOKENS.color.text.tertiary}
-            />
-            <Text className="text-xs text-[var(--color-app-text-tertiary)] font-medium">{count}</Text>
+          <Animated.View
+            className="flex-row items-center gap-[var(--space-xxs)]"
+            style={animatedStyle}
+          >
+            {liked ? (
+              <HeartFilledIcon
+                color={tokens.semantic.color.feedback.like.icon}
+              />
+            ) : (
+              <HeartOutlineIcon
+                color={tokens.semantic.color.text.stat}
+              />
+            )}
+            <Text className="text-[length:var(--typography-sm-font-size)] leading-[var(--typography-sm-line-height)] text-[var(--color-text-stat)] font-bold lining-nums tabular-nums stacked-fractions">
+              {count}
+            </Text>
           </Animated.View>
         </Pressable>
       </View>

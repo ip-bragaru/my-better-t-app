@@ -23,13 +23,13 @@ function FeedPostCardComponent({ post, onPress }: FeedPostCardProps) {
     return (
       <PostCard>
         <View className="gap-0">
-          <View className="px-4 py-4">
+          <View className="px-[var(--component-layout-card-padding)] py-[var(--component-layout-card-padding)]">
             <PostAuthorRow author={post.author} showVerified={false} />
           </View>
           <PaidPostCover coverUrl={post.coverUrl} />
-          <View className="gap-3 px-4 py-4">
-            <SkeletonBlock className="h-6.5 w-full max-w-41 rounded-full bg-[var(--color-app-border-default)]" />
-            <SkeletonBlock className="h-10 w-full rounded-full bg-[var(--color-app-border-default)]" />
+          <View className="gap-[var(--space-sm)] px-[var(--component-layout-card-padding)] py-[var(--component-layout-card-padding)]">
+            <SkeletonBlock className="h-6.5 w-full max-w-41 rounded-full bg-[var(--color-border-default)]" />
+            <SkeletonBlock className="h-10 w-full rounded-full bg-[var(--color-border-default)]" />
           </View>
         </View>
       </PostCard>
@@ -37,10 +37,13 @@ function FeedPostCardComponent({ post, onPress }: FeedPostCardProps) {
   }
 
   return (
-    <PostCard className="gap-2 px-4 py-3" onPress={() => onPress(post)}>
+    <PostCard
+      className="gap-[var(--space-xs)] px-[var(--component-layout-card-padding)] py-[var(--space-sm)]"
+      onPress={() => onPress(post)}
+    >
       <PostAuthorRow author={post.author} showVerified={false} />
-      <View className="-mx-4 mt-2">
-        <PostImage uri={post.coverUrl} alt={post.title} rounded={0} />
+      <View className="-mx-[var(--component-layout-card-padding)] mt-[var(--space-xs)]">
+        <PostImage uri={post.coverUrl} alt={post.title} rounded="none" />
       </View>
       <PostTextBlock
         title={post.title}

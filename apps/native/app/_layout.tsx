@@ -2,13 +2,13 @@ import "../global.css";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { HeroUINativeProvider } from "heroui-native";
 import { Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { AppProviders } from "@core/providers/app-providers";
-import { AppThemeProvider } from "@contexts/app-theme-context";
 import { FONT_FAMILIES } from "@shared/config/fonts";
+import { getThemeClassName } from "@shared/config/design-tokens";
+import { cn } from "@shared/lib/cn";
 
 function StackLayout() {
   return (
@@ -20,11 +20,24 @@ function StackLayout() {
         options={{
           headerBackButtonDisplayMode: "minimal",
           headerTitle: () => (
-            <Text className="text-base text-neutral-950 font-semibold">Not Found</Text>
+            <Text className="text-[length:var(--typography-md-font-size)] text-[var(--color-text-primary)] font-semibold">
+              Not Found
+            </Text>
           ),
         }}
       />
     </Stack>
+  );
+}
+
+function AppShell() {
+  return (
+    <GestureHandlerRootView className={cn("flex-1", getThemeClassName())}>
+      <StatusBar style="dark" animated />
+      <AppProviders>
+        <StackLayout />
+      </AppProviders>
+    </GestureHandlerRootView>
   );
 }
 
@@ -40,15 +53,6 @@ export default function Layout() {
   }
 
   return (
-    <GestureHandlerRootView className="flex-1">
-      <StatusBar style="dark" animated />
-      <AppThemeProvider>
-        <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
-          <AppProviders>
-            <StackLayout />
-          </AppProviders>
-        </HeroUINativeProvider>
-      </AppThemeProvider>
-    </GestureHandlerRootView>
+    <AppShell />
   );
 }
